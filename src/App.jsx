@@ -1540,8 +1540,13 @@ function Settings({ biz, onLogout }) {
         <SecTitle>Developer Handoff Notes</SecTitle>
         <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.8 }}>
           <div>✅ Frontend complete — React SPA</div>
-          <div>⚠️ Backend needed for: real auth, email sending, payment processing</div>
-          <div>📧 Email triggers marked with: <code style={{ background: T.light, padding: "1px 6px", borderRadius: 4 }}>// NOTE FOR DEVELOPER</code></div>
+          <button onClick={() => handleCheckout(import.meta.env.VITE_STRIPE_PRO_PRICE_ID)} style={{ padding: "10px 16px", marginRight: 8, background: "#635BFF", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14 }}>
+            Check Out - Basic
+          </button>
+          <button onClick={() => handleCheckout(import.meta.env.VITE_STRIPE_BUSINESS_PRICE_ID)} style={{ padding: "10px 16px", background: "#635BFF", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14 }}>
+            Check Out - Premium
+          </button>
+          <div style={{ marginTop: 12 }}>📧 Email triggers marked with: <code style={{ background: T.light, padding: "1px 6px", borderRadius: 4 }}>// NOTE FOR DEVELOPER</code></div>
           <div>🔐 Passwords hashed client-side (replace with bcrypt server-side)</div>
           <div>💳 Stripe integration needed for subscription billing</div>
           <div>🗄️ Replace localStorage with PostgreSQL or MongoDB</div>
