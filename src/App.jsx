@@ -1648,7 +1648,7 @@ function Pricing({ biz, onUpgrade, onLogout, handleCheckout }) {
 // ═══════════════════════════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════════════════════════
-function Settings({ biz, onLogout }) {
+function Settings({ biz, onLogout, handleCheckout }) {
   return (
     <div>
       <h2 style={{ color: T.navy, margin: "0 0 16px", fontSize: 20, fontWeight: 800 }}>Settings</h2>
@@ -1659,6 +1659,11 @@ function Settings({ biz, onLogout }) {
         <div style={{ fontSize: 13, color: T.muted, marginBottom: 2 }}>📞 {biz.phone}</div>
         <div style={{ fontSize: 13, color: T.muted, marginBottom: 10 }}>Joined: {biz.createdAt}</div>
         <Badge status={biz.plan} />
+        {biz.plan === "free" && (
+          <button onClick={() => handleCheckout(import.meta.env.VITE_STRIPE_PRO_PRICE_ID)} style={{ width: "100%", padding: "10px 14px", marginTop: 12, background: T.gold, color: T.navy, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 700 }}>
+            💳 Upgrade Plan
+          </button>
+        )}
       </Card>
       <Card style={{ marginBottom: 12 }}>
         <SecTitle>Developer Handoff Notes</SecTitle>
@@ -1836,7 +1841,7 @@ export default function App() {
         {tab === "expenses" && <Expenses expenses={expenses} setExpenses={setExpenses} />}
         {tab === "reports" && <Reporting jobs={jobs} clients={clients} invoices={invoices} expenses={expenses} />}
         {tab === "reviews" && <Reviews jobs={jobs} clients={clients} biz={biz} />}
-        {tab === "settings" && <Settings biz={biz} onLogout={handleLogout} />}
+        {tab === "settings" && <Settings biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} />}
       </div>
 
       {/* BOTTOM NAV */}
