@@ -1522,6 +1522,130 @@ function NotifPanel({ notifications, jobs, clients, onDismiss, onClose }) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// PRICING
+// ═══════════════════════════════════════════════════════════
+function Pricing({ biz, onUpgrade, onLogout, handleCheckout }) {
+  const plans = [
+    {
+      name: "Pro",
+      price: "£29",
+      period: "/month",
+      description: "Perfect for small teams",
+      features: [
+        "Unlimited clients & staff",
+        "Quote generator",
+        "Expense tracker",
+        "Reporting & analytics",
+        "Client portal",
+        "GPS check-in"
+      ],
+      priceId: import.meta.env.VITE_STRIPE_PRO_PRICE_ID,
+      recommended: false
+    },
+    {
+      name: "Business",
+      price: "£59",
+      period: "/month",
+      description: "For growing businesses",
+      features: [
+        "Everything in Pro",
+        "Multi-location support",
+        "Custom branding",
+        "Priority support",
+        "API access",
+        "Advanced reporting"
+      ],
+      priceId: import.meta.env.VITE_STRIPE_BUSINESS_PRICE_ID,
+      recommended: true
+    }
+  ];
+
+  return (
+    <div style={{ background: T.cream, minHeight: "100vh", fontFamily: "'DM Sans','Segoe UI',sans-serif", maxWidth: 480, margin: "0 auto", display: "flex", flexDirection: "column" }}>
+      {/* TOP BAR */}
+      <div style={{ background: T.navy, padding: "13px 16px 11px", position: "sticky", top: 0, zIndex: 100 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, background: T.gold, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17 }}>🦉</div>
+            <div>
+              <div style={{ color: T.white, fontWeight: 800, fontSize: 13, lineHeight: 1.2 }}>CleanManager Pro</div>
+              <div style={{ color: T.gold, fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase" }}>Choose a Plan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div style={{ flex: 1, padding: "20px 16px 80px", overflow: "auto" }}>
+        <h2 style={{ color: T.navy, margin: "0 0 8px", fontSize: 24, fontWeight: 800, textAlign: "center" }}>Upgrade Your Plan</h2>
+        <p style={{ color: T.muted, textAlign: "center", marginBottom: 24, fontSize: 14 }}>Unlock powerful features to grow your cleaning business</p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, marginBottom: 24 }}>
+          {plans.map((plan) => (
+            <Card key={plan.name} style={{ position: "relative", border: plan.recommended ? `2px solid ${T.gold}` : "none", paddingTop: plan.recommended ? 28 : 16 }}>
+              {plan.recommended && (
+                <div style={{ position: "absolute", top: -12, left: 16, background: T.gold, color: T.navy, padding: "4px 12px", borderRadius: 12, fontSize: 11, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase" }}>
+                  Recommended
+                </div>
+              )}
+              <h3 style={{ color: T.navy, margin: "0 0 4px", fontSize: 18, fontWeight: 800 }}>{plan.name}</h3>
+              <p style={{ color: T.muted, margin: "0 0 12px", fontSize: 12 }}>{plan.description}</p>
+              
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
+                  <span style={{ color: T.navy, fontSize: 28, fontWeight: 800 }}>{plan.price}</span>
+                  <span style={{ color: T.muted, fontSize: 14 }}>{plan.period}</span>
+                </div>
+              </div>
+
+              <ul style={{ listStyle: "none", margin: "0 0 16px", padding: 0 }}>
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} style={{ color: T.navy, fontSize: 13, marginBottom: 8, display: "flex", alignItems: "flex-start", gap: 8 }}>
+                    <span style={{ color: T.green, marginTop: 2 }}>✓</span>
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <button onClick={() => handleCheckout(plan.priceId)} style={{ 
+                width: "100%", 
+                padding: "12px 16px", 
+                background: plan.recommended ? T.gold : T.blue, 
+                color: plan.recommended ? T.navy : T.white, 
+                border: "none", 
+                borderRadius: 8, 
+                fontSize: 14, 
+                fontWeight: 700, 
+                cursor: "pointer",
+                transition: "opacity 0.2s"
+              }} onMouseOver={(e) => e.target.style.opacity = "0.9"} onMouseOut={(e) => e.target.style.opacity = "1"}>
+                Subscribe Now
+              </button>
+            </Card>
+          ))}
+        </div>
+
+        <Card style={{ background: "rgba(107, 63, 160, 0.05)", borderLeft: `3px solid ${T.purple}` }}>
+          <div style={{ fontSize: 13, color: T.navy }}>
+            <strong style={{ display: "block", marginBottom: 8 }}>💳 First 14 days free</strong>
+            <p style={{ margin: 0, color: T.muted, fontSize: 12, lineHeight: 1.6 }}>
+              Try either plan risk-free for 14 days. No credit card charges until your trial ends. Cancel anytime.
+            </p>
+          </div>
+        </Card>
+      </div>
+
+      {/* BOTTOM BUTTONS */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, maxWidth: 480, margin: "0 auto", background: T.cream, padding: "12px 16px", borderTop: `1px solid ${T.light}`, display: "flex", gap: 8 }}>
+        <button onClick={onLogout} style={{ flex: 1, padding: "12px 16px", background: "none", border: `1px solid ${T.light}`, borderRadius: 8, color: T.navy, fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+          Sign Out
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════════════════════════
 function Settings({ biz, onLogout }) {
@@ -1652,6 +1776,7 @@ export default function App() {
   if (!biz) return <AuthScreen onLogin={handleLogin} data={data} />;
   if (biz.isAdmin) return <AdminPanel data={data} onDataChange={updateData} onLogout={handleLogout} />;
   if (clientPortal) return <ClientPortal biz={biz} clients={clients} jobs={jobs} onExit={() => setClientPortal(false)} />;
+  if (biz.plan === "free") return <Pricing biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} />;
 
   const mainTabs = [{ id: "dashboard", l: "Home", i: "🏠" }, { id: "quote", l: "Quote", i: "💷" }, { id: "jobs", l: "Jobs", i: "🧹" }, { id: "clients", l: "Clients", i: "👥" }, { id: "more", l: "More", i: "⚙️" }];
   const moreTabs = [{ id: "invoices", l: "Invoices", i: "💰" }, { id: "staff", l: "Staff", i: "👷" }, { id: "expenses", l: "Expenses", i: "🧾" }, { id: "reports", l: "Reports", i: "📊" }, { id: "reviews", l: "Reviews", i: "⭐" }, { id: "portal", l: "Client Portal", i: "🔐" }, { id: "settings", l: "Settings", i: "⚙️" }];
