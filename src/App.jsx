@@ -1528,7 +1528,7 @@ function Pricing({ biz, onUpgrade, onLogout, handleCheckout }) {
   const plans = [
     {
       name: "Pro",
-      price: "£29",
+      price: "£19.99",
       period: "/month",
       description: "Perfect for small teams",
       features: [
@@ -1544,7 +1544,7 @@ function Pricing({ biz, onUpgrade, onLogout, handleCheckout }) {
     },
     {
       name: "Business",
-      price: "£59",
+      price: "£39.99",
       period: "/month",
       description: "For growing businesses",
       features: [
@@ -1743,15 +1743,15 @@ export default function App() {
     if (newBiz) {
       const newData = { ...data, businesses: [...data.businesses, newBiz], clients: { ...data.clients, [newBiz.id]: [] }, jobs: { ...data.jobs, [newBiz.id]: [] }, staff: { ...data.staff, [newBiz.id]: [] }, invoices: { ...data.invoices, [newBiz.id]: [] }, expenses: { ...data.expenses, [newBiz.id]: [] }, notifications: { ...data.notifications, [newBiz.id]: [] } };
       setData(newData); persist(newData);
-      setBiz(newBiz);
-      // For paid plan registrations, trigger Stripe checkout immediately
+      // For paid plan registrations, trigger Stripe checkout immediately without loading app
       if (newBiz.plan === "pro") {
-        setTimeout(() => handleCheckout(import.meta.env.VITE_STRIPE_PRO_PRICE_ID), 500);
+        handleCheckout(import.meta.env.VITE_STRIPE_PRO_PRICE_ID);
         return;
       } else if (newBiz.plan === "business") {
-        setTimeout(() => handleCheckout(import.meta.env.VITE_STRIPE_BUSINESS_PRICE_ID), 500);
+        handleCheckout(import.meta.env.VITE_STRIPE_BUSINESS_PRICE_ID);
         return;
       }
+      setBiz(newBiz);
     } else {
       setBiz(bizObj);
     }
