@@ -61,7 +61,7 @@ const buildInitialData = () => ({
       address: "E14, London",
       website: "www.blueowlcleanings.com",
       companyNo: "16415837",
-      plan: "pro",
+      plan: "free",
       passwordHash: simpleHash("BlueOwl2026!"),
       pin: simpleHash("1234"),
       isOwner: true,
