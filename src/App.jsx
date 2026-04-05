@@ -1563,6 +1563,14 @@ function Settings({ biz, onLogout }) {
 // ═══════════════════════════════════════════════════════════
 export default function App() {
   const [biz, setBiz] = useState(null);
+  const handleCheckout = async (p) => {
+    const r = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      body: JSON.stringify({ priceId: p })
+    });
+    const { url } = await r.json();
+    window.location.href = url;
+  };
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("dashboard");
@@ -1723,4 +1731,3 @@ export default function App() {
     </div>  
      );
 }
-const handleCheckout=async(p)=>{const r=await fetch(/.netlify/functions/create-checkout,{method:POST,body:JSON.stringify({priceId:p})});const{url}=await r.json();window.location.href=url;};
