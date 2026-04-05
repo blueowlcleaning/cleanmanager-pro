@@ -1718,3 +1718,4 @@ export default function App() {
     </div>  
      );
 }
+const handleCheckout=async(p)=>{const r=await fetch(/.netlify/functions/create-checkout,{method:POST,body:JSON.stringify({priceId:p})});const{url}=await r.json();window.location.href=url;};
