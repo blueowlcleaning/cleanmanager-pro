@@ -67,6 +67,7 @@ const buildInitialData = () => ({
       isOwner: true,
       isAdmin: false,
       suspended: false,
+      exemptFromSubscription: false,
       createdAt: "2026-01-01",
       trialEnds: null,
     },
@@ -81,6 +82,7 @@ const buildInitialData = () => ({
       isOwner: false,
       isAdmin: true,
       suspended: false,
+      exemptFromSubscription: false,
       createdAt: "2026-01-01",
     },
   ],
@@ -202,7 +204,7 @@ const Toast = ({ message, type = "success" }) => (
 // ═══════════════════════════════════════════════════════════
 // AUTH — LOGIN / SIGNUP
 // ═══════════════════════════════════════════════════════════
-function AuthScreen({ onLogin, data }) {
+function AuthScreen({ onLogin, data, handleCheckout }) {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -238,9 +240,15 @@ function AuthScreen({ onLogin, data }) {
     if (newPass !== confirmPass) { setError("Passwords do not match."); return; }
     if (newPin.length !== 4 || isNaN(newPin)) { setError("PIN must be exactly 4 digits."); return; }
     if (data.businesses.find(b => b.email.toLowerCase() === email.toLowerCase())) { setError("An account already exists with this email."); return; }
-    const nb = { id: generateId(), name: bizName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), address: address.trim(), website: "", companyNo: "", plan, passwordHash: simpleHash(newPass), pin: simpleHash(newPin), isOwner: false, isAdmin: false, suspended: false, createdAt: new Date().toISOString().split("T")[0], trialEnds: plan !== "free" ? new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0] : null };
-    // NOTE FOR DEVELOPER: Send welcome email here with PIN and login details
-    // POST /api/email/welcome { to: nb.email, bizName: nb.name, pin: newPin, plan: nb.plan }
+    const nb = { id: generateId(), name: bizName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), address: address.trim(), website: "", companyNo: "", plan, passwordHash: simpleHash(newPass), pin: simpleHash(newPin), isOwner: false, isAdmin: false, suspended: false, exemptFromSubscription: false, createdAt: new Date().toISOString().split("T")[0], trialEnds: plan !== "free" ? new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0] : null };
+    // For paid plans, redirect to Stripe before creating account
+    if (plan !== "free") {
+      localStorage.setItem("pendingBusiness", JSON.stringify(nb));
+      localStorage.setItem("pendingBusinessData", JSON.stringify({ clients: {}, jobs: {}, staff: {}, invoices: {}, expenses: {}, notifications: {} }));
+      const priceId = plan === "pro" ? import.meta.env.VITE_STRIPE_PRO_PRICE_ID : import.meta.env.VITE_STRIPE_BUSINESS_PRICE_ID;
+      handleCheckout(priceId);
+      return;
+    }
     onLogin(nb, nb);
   };
 
@@ -1648,7 +1656,7 @@ function Pricing({ biz, onUpgrade, onLogout, handleCheckout }) {
 // ═══════════════════════════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════════════════════════
-function Settings({ biz, onLogout, handleCheckout }) {
+function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
   return (
     <div>
       <h2 style={{ color: T.navy, margin: "0 0 16px", fontSize: 20, fontWeight: 800 }}>Settings</h2>
@@ -1659,12 +1667,22 @@ function Settings({ biz, onLogout, handleCheckout }) {
         <div style={{ fontSize: 13, color: T.muted, marginBottom: 2 }}>📞 {biz.phone}</div>
         <div style={{ fontSize: 13, color: T.muted, marginBottom: 10 }}>Joined: {biz.createdAt}</div>
         <Badge status={biz.plan} />
-        {biz.plan === "free" && (
+        {biz.plan === "free" && !biz.exemptFromSubscription && (
           <button onClick={() => handleCheckout(import.meta.env.VITE_STRIPE_PRO_PRICE_ID)} style={{ width: "100%", padding: "10px 14px", marginTop: 12, background: T.gold, color: T.navy, border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 700 }}>
             💳 Upgrade Plan
           </button>
         )}
       </Card>
+      {biz.isOwner && (
+        <Card style={{ marginBottom: 12 }}>
+          <SecTitle>Subscription</SecTitle>
+          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+            <input type="checkbox" checked={biz.exemptFromSubscription || false} onChange={(e) => onUpdate({ exemptFromSubscription: e.target.checked })} style={{ cursor: "pointer", width: 18, height: 18 }} />
+            <span style={{ fontSize: 13, color: T.navy, flex: 1 }}>Skip subscription requirement</span>
+          </label>
+          <p style={{ fontSize: 11, color: T.muted, margin: "8px 0 0", lineHeight: 1.5, paddingLeft: 28 }}>When enabled, you can use the app without upgrading to a paid plan.</p>
+        </Card>
+      )}
       <Btn full variant="danger" onClick={onLogout}>Sign Out</Btn>
     </div>
   );
@@ -1694,7 +1712,37 @@ export default function App() {
 
   useEffect(() => {
     hydrate().then(saved => {
-      setData(saved || buildInitialData());
+      const initialData = saved || buildInitialData();
+      setData(initialData);
+      
+      // Check if user is returning from Stripe payment for paid plan signup
+      const pendingBusiness = localStorage.getItem("pendingBusiness");
+      if (pendingBusiness) {
+        try {
+          const newBiz = JSON.parse(pendingBusiness);
+          const pendingData = JSON.parse(localStorage.getItem("pendingBusinessData") || "{}");
+          // Create the new business account after Stripe redirect
+          const updatedData = {
+            ...initialData,
+            businesses: [...initialData.businesses, newBiz],
+            clients: { ...initialData.clients, [newBiz.id]: pendingData.clients || [] },
+            jobs: { ...initialData.jobs, [newBiz.id]: pendingData.jobs || [] },
+            staff: { ...initialData.staff, [newBiz.id]: pendingData.staff || [] },
+            invoices: { ...initialData.invoices, [newBiz.id]: pendingData.invoices || [] },
+            expenses: { ...initialData.expenses, [newBiz.id]: pendingData.expenses || [] },
+            notifications: { ...initialData.notifications, [newBiz.id]: pendingData.notifications || [] }
+          };
+          setData(updatedData);
+          persist(updatedData);
+          setBiz(newBiz);
+          setTab("dashboard");
+          localStorage.removeItem("pendingBusiness");
+          localStorage.removeItem("pendingBusinessData");
+        } catch (e) {
+          console.error("Failed to process pending business:", e);
+        }
+      }
+      
       setLoading(false);
     });
   }, []);
@@ -1740,6 +1788,14 @@ export default function App() {
   const dismissNotification = (i) => update("notifications", prev => prev.filter((_, idx) => idx !== i));
 
   const handleLogin = (bizObj, newBiz, selectedPlan) => {
+    // Force business plan for demo account
+    if (bizObj?.email === "office@blueowlcleanings.co.uk") {
+      bizObj = { ...bizObj, plan: "business" };
+    }
+    if (newBiz?.email === "office@blueowlcleanings.co.uk") {
+      newBiz = { ...newBiz, plan: "business" };
+    }
+    
     if (newBiz) {
       const newData = { ...data, businesses: [...data.businesses, newBiz], clients: { ...data.clients, [newBiz.id]: [] }, jobs: { ...data.jobs, [newBiz.id]: [] }, staff: { ...data.staff, [newBiz.id]: [] }, invoices: { ...data.invoices, [newBiz.id]: [] }, expenses: { ...data.expenses, [newBiz.id]: [] }, notifications: { ...data.notifications, [newBiz.id]: [] } };
       setData(newData); persist(newData);
@@ -1760,6 +1816,14 @@ export default function App() {
 
   const handleLogout = () => { setBiz(null); setTab("dashboard"); setMoreOpen(false); };
 
+  const updateBusiness = (updates) => {
+    const updated = { ...biz, ...updates };
+    setBiz(updated);
+    const newBusinesses = data.businesses.map(b => b.id === biz.id ? updated : b);
+    const newData = { ...data, businesses: newBusinesses };
+    persist(newData);
+  };
+
   if (loading) return (
     <div style={{ background: T.navy, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>
       <div style={{ textAlign: "center" }}>
@@ -1769,10 +1833,10 @@ export default function App() {
     </div>
   );
 
-  if (!biz) return <AuthScreen onLogin={handleLogin} data={data} />;
+  if (!biz) return <AuthScreen onLogin={handleLogin} data={data} handleCheckout={handleCheckout} />;
   if (biz.isAdmin) return <AdminPanel data={data} onDataChange={updateData} onLogout={handleLogout} />;
   if (clientPortal) return <ClientPortal biz={biz} clients={clients} jobs={jobs} onExit={() => setClientPortal(false)} />;
-  if (biz.plan === "free") return <Pricing biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} />;
+  if (biz.plan === "free" && !biz.exemptFromSubscription) return <Pricing biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} />;
 
   const mainTabs = [{ id: "dashboard", l: "Home", i: "🏠" }, { id: "quote", l: "Quote", i: "💷" }, { id: "jobs", l: "Jobs", i: "🧹" }, { id: "clients", l: "Clients", i: "👥" }, { id: "more", l: "More", i: "⚙️" }];
   const moreTabs = [{ id: "invoices", l: "Invoices", i: "💰" }, { id: "staff", l: "Staff", i: "👷" }, { id: "expenses", l: "Expenses", i: "🧾" }, { id: "reports", l: "Reports", i: "📊" }, { id: "reviews", l: "Reviews", i: "⭐" }, { id: "portal", l: "Client Portal", i: "🔐" }, { id: "settings", l: "Settings", i: "⚙️" }];
@@ -1832,7 +1896,7 @@ export default function App() {
         {tab === "expenses" && <Expenses expenses={expenses} setExpenses={setExpenses} />}
         {tab === "reports" && <Reporting jobs={jobs} clients={clients} invoices={invoices} expenses={expenses} />}
         {tab === "reviews" && <Reviews jobs={jobs} clients={clients} biz={biz} />}
-        {tab === "settings" && <Settings biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} />}
+        {tab === "settings" && <Settings biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} onUpdate={updateBusiness} />}
       </div>
 
       {/* BOTTOM NAV */}
