@@ -1714,14 +1714,21 @@ export default function App() {
     hydrate().then(saved => {
       const initialData = saved || buildInitialData();
       setData(initialData);
-      
-      // Check if user is returning from Stripe payment for paid plan signup
+
+      const params = new URLSearchParams(window.location.search);
+      const success = params.get("success") === "true";
+      const cancelled = params.get("cancelled") === "true";
       const pendingBusiness = localStorage.getItem("pendingBusiness");
-      if (pendingBusiness) {
+
+      if (cancelled && pendingBusiness) {
+        localStorage.removeItem("pendingBusiness");
+        localStorage.removeItem("pendingBusinessData");
+      }
+
+      if (success && pendingBusiness) {
         try {
           const newBiz = JSON.parse(pendingBusiness);
           const pendingData = JSON.parse(localStorage.getItem("pendingBusinessData") || "{}");
-          // Create the new business account after Stripe redirect
           const updatedData = {
             ...initialData,
             businesses: [...initialData.businesses, newBiz],
@@ -1738,11 +1745,15 @@ export default function App() {
           setTab("dashboard");
           localStorage.removeItem("pendingBusiness");
           localStorage.removeItem("pendingBusinessData");
+
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
         } catch (e) {
           console.error("Failed to process pending business:", e);
         }
       }
-      
+
       setLoading(false);
     });
   }, []);
