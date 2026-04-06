@@ -1697,6 +1697,7 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
 export default function App() {
   const [biz, setBiz] = useState(null);
   const handleCheckout = async (p) => {
+    alert(`Starting checkout with priceId: ${p}`);
     try {
       const r = await fetch('/api/create-checkout', {
         method: 'POST',
