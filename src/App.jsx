@@ -1697,12 +1697,21 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
 export default function App() {
   const [biz, setBiz] = useState(null);
   const handleCheckout = async (p) => {
-    const r = await fetch('/api/create-checkout', {
-      method: 'POST',
-      body: JSON.stringify({ priceId: p })
-    });
-    const { url } = await r.json();
-    window.location.href = url;
+    try {
+      const r = await fetch('/api/create-checkout', {
+        method: 'POST',
+        body: JSON.stringify({ priceId: p })
+      });
+      if (!r.ok) {
+        const error = await r.json();
+        throw new Error(error.error || `HTTP ${r.status}: ${r.statusText}`);
+      }
+      const { url } = await r.json();
+      window.location.href = url;
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert(`Checkout failed: ${error.message}`);
+    }
   };
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
