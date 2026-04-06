@@ -74,7 +74,8 @@ async function handleCheckoutSessionCompleted(session) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'office@blueowlcleanings.co.uk',
+          from: 'onboarding@resend.dev',
+          reply_to: 'blueowlcleaninguk@gmail.com',
           to: session.customer_email,
           subject: 'Welcome to CleanManager Pro',
           html: `
