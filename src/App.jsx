@@ -1712,61 +1712,42 @@ export default function App() {
   const [processingPayment, setProcessingPayment] = useState(false);
 
   useEffect(() => {
-    hydrate().then(saved => {
-      const initialData = saved || buildInitialData();
-      setData(initialData);
+    const dataStr = localStorage.getItem("cleanmanager_data");
+    const data = dataStr ? JSON.parse(dataStr) : buildInitialData();
 
-      const search = window.location.search || "";
-      console.log("window.location.search:", search);
-      const success = search.includes("success=true");
-      const cancelled = search.includes("cancelled=true");
-      const pendingBusiness = localStorage.getItem("pendingBusiness");
-      console.log("pendingBusiness from localStorage:", pendingBusiness);
-
-      if (cancelled && pendingBusiness) {
-        localStorage.removeItem("pendingBusiness");
-        localStorage.removeItem("pendingBusinessData");
-      }
-
-      if (success && pendingBusiness) {
-        setProcessingPayment(true);
+    const search = window.location.search || "";
+    if (search.includes("success=true")) {
+      const pendingDataStr = localStorage.getItem("pendingBusinessData");
+      if (pendingDataStr) {
         try {
-          const newBiz = JSON.parse(pendingBusiness);
-          const pendingData = JSON.parse(localStorage.getItem("pendingBusinessData") || "{}");
-          console.log("pendingBusinessData from localStorage:", localStorage.getItem("pendingBusinessData"));
+          const pendingData = JSON.parse(pendingDataStr);
+          const newBiz = { ...pendingData, plan: "pro" };
           const updatedData = {
-            ...initialData,
-            businesses: [...initialData.businesses, newBiz],
-            clients: { ...initialData.clients, [newBiz.id]: pendingData.clients || [] },
-            jobs: { ...initialData.jobs, [newBiz.id]: pendingData.jobs || [] },
-            staff: { ...initialData.staff, [newBiz.id]: pendingData.staff || [] },
-            invoices: { ...initialData.invoices, [newBiz.id]: pendingData.invoices || [] },
-            expenses: { ...initialData.expenses, [newBiz.id]: pendingData.expenses || [] },
-            notifications: { ...initialData.notifications, [newBiz.id]: pendingData.notifications || [] }
+            ...data,
+            businesses: [...data.businesses, newBiz],
+            clients: { ...data.clients, [newBiz.id]: [] },
+            jobs: { ...data.jobs, [newBiz.id]: [] },
+            staff: { ...data.staff, [newBiz.id]: [] },
+            invoices: { ...data.invoices, [newBiz.id]: [] },
+            expenses: { ...data.expenses, [newBiz.id]: [] },
+            notifications: { ...data.notifications, [newBiz.id]: [] }
           };
           setData(updatedData);
-          persist(updatedData);
-          console.log("Hydration result: data updated with new business");
+          localStorage.setItem("cleanmanager_data", JSON.stringify(updatedData));
           setBiz(newBiz);
           setTab("dashboard");
-          localStorage.removeItem("pendingBusiness");
           localStorage.removeItem("pendingBusinessData");
-
           if (window.history && window.history.replaceState) {
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         } catch (e) {
           console.error("Failed to process pending business:", e);
         }
-        setProcessingPayment(false);
       }
-
-      setLoading(false);
-    }).catch((error) => {
-      console.error("Hydration failed:", error);
-      setData(buildInitialData());
-      setLoading(false);
-    });
+    } else {
+      setData(data);
+    }
+    setLoading(false);
   }, []);
 
   const showToast = (message, type = "success") => {
