@@ -62,6 +62,8 @@ async function handleCheckoutSessionCompleted(session) {
   console.log(`Checkout session completed: ${session.id}`);
   console.log(`Customer: ${session.customer}`);
   console.log(`Subscription: ${session.subscription}`);
+  console.log('Customer email:', session.customer_email);
+  console.log('RESEND_API_KEY length:', process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY.length : 'undefined');
 
   // Send welcome email using Resend
   const resendApiKey = process.env.RESEND_API_KEY;
