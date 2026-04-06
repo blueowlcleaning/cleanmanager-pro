@@ -1715,9 +1715,9 @@ export default function App() {
       const initialData = saved || buildInitialData();
       setData(initialData);
 
-      const params = new URLSearchParams(window.location.search);
-      const success = params.get("success") === "true";
-      const cancelled = params.get("cancelled") === "true";
+      const search = window.location.search || "";
+      const success = search.includes("success=true");
+      const cancelled = search.includes("cancelled=true");
       const pendingBusiness = localStorage.getItem("pendingBusiness");
 
       if (cancelled && pendingBusiness) {
@@ -1754,6 +1754,10 @@ export default function App() {
         }
       }
 
+      setLoading(false);
+    }).catch((error) => {
+      console.error("Hydration failed:", error);
+      setData(buildInitialData());
       setLoading(false);
     });
   }, []);
