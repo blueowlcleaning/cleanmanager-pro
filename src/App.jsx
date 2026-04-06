@@ -1417,12 +1417,15 @@ function Dashboard({ biz, clients, jobs, invoices, expenses, notifications, setT
   const upcoming = jobs.filter(j => ["Confirmed", "Pending"].includes(j.status)).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
   const alerts = jobs.filter(j => { const d = (new Date(j.date) - new Date()) / 86400000; return d >= 0 && d <= 3 && !["Completed", "Cancelled"].includes(j.status); }).length;
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
   return (
     <div>
       <div style={{ marginBottom: 18 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <h2 style={{ color: T.navy, fontSize: 20, fontWeight: 800, margin: 0 }}>Good morning, {biz.name?.split(" ")[0]} 👋</h2>
+            <h2 style={{ color: T.navy, fontSize: 20, fontWeight: 800, margin: 0 }}>{greeting}, {biz.name?.split(" ")[0]} 👋</h2>
             <p style={{ color: T.muted, fontSize: 13, margin: "3px 0 0" }}>{biz.name}</p>
           </div>
           <Badge status={biz.plan} />
