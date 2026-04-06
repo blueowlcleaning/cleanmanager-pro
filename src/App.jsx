@@ -1709,6 +1709,7 @@ export default function App() {
   const [clientPortal, setClientPortal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
+  const [processingPayment, setProcessingPayment] = useState(false);
 
   useEffect(() => {
     hydrate().then(saved => {
@@ -1716,9 +1717,11 @@ export default function App() {
       setData(initialData);
 
       const search = window.location.search || "";
+      console.log("window.location.search:", search);
       const success = search.includes("success=true");
       const cancelled = search.includes("cancelled=true");
       const pendingBusiness = localStorage.getItem("pendingBusiness");
+      console.log("pendingBusiness from localStorage:", pendingBusiness);
 
       if (cancelled && pendingBusiness) {
         localStorage.removeItem("pendingBusiness");
@@ -1726,9 +1729,11 @@ export default function App() {
       }
 
       if (success && pendingBusiness) {
+        setProcessingPayment(true);
         try {
           const newBiz = JSON.parse(pendingBusiness);
           const pendingData = JSON.parse(localStorage.getItem("pendingBusinessData") || "{}");
+          console.log("pendingBusinessData from localStorage:", localStorage.getItem("pendingBusinessData"));
           const updatedData = {
             ...initialData,
             businesses: [...initialData.businesses, newBiz],
@@ -1741,6 +1746,7 @@ export default function App() {
           };
           setData(updatedData);
           persist(updatedData);
+          console.log("Hydration result: data updated with new business");
           setBiz(newBiz);
           setTab("dashboard");
           localStorage.removeItem("pendingBusiness");
@@ -1752,6 +1758,7 @@ export default function App() {
         } catch (e) {
           console.error("Failed to process pending business:", e);
         }
+        setProcessingPayment(false);
       }
 
       setLoading(false);
@@ -1844,6 +1851,15 @@ export default function App() {
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>🦉</div>
         <div style={{ color: T.white, fontSize: 16, fontWeight: 700 }}>Loading CleanManager Pro...</div>
+      </div>
+    </div>
+  );
+
+  if (processingPayment) return (
+    <div style={{ background: T.navy, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🦉</div>
+        <div style={{ color: T.white, fontSize: 16, fontWeight: 700 }}>Processing your payment...</div>
       </div>
     </div>
   );
