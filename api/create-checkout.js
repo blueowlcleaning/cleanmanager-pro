@@ -7,10 +7,13 @@ module.exports = async function handler(req, res) {
 
   try {
     const { priceId } = req.body;
+    console.log('Received priceId:', priceId);
 
     if (!priceId) {
       return res.status(400).json({ error: 'Missing priceId' });
     }
+
+    console.log('STRIPE_SECRET_KEY length:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 'undefined');
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
@@ -22,7 +25,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ url: session.url });
   } catch (error) {
-    console.error('Checkout error:', error.message);
+    console.error('Checkout error:', error);
     return res.status(500).json({ error: error.message });
   }
 };
