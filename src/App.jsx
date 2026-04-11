@@ -234,20 +234,16 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
   };
 
   const signup = () => {
-    alert('Submit clicked');
     setError("");
     if (!bizName.trim() || !email.trim() || !phone.trim()) { setError("Please fill in all required fields."); return; }
     if (newPass.length < 8) { setError("Password must be at least 8 characters."); return; }
-    alert('Password validation passed');
     if (newPass !== confirmPass) { setError("Passwords do not match."); return; }
     if (newPin.length !== 4 || isNaN(newPin)) { setError("PIN must be exactly 4 digits."); return; }
     if (data.businesses.find(b => b.email.toLowerCase() === email.toLowerCase())) { setError("An account already exists with this email."); return; }
     let nb;
     try {
       nb = { id: generateId(), name: bizName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), address: address.trim(), website: "", companyNo: "", plan, passwordHash: simpleHash(newPass), pin: simpleHash(newPin), isOwner: false, isAdmin: false, suspended: false, exemptFromSubscription: false, createdAt: new Date().toISOString().split("T")[0], trialEnds: plan !== "free" ? new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0] : null };
-      alert('Business object created');
     } catch (error) {
-      alert('Error creating business object: ' + error.message);
       console.error('Business creation error:', error);
       return;
     }
@@ -255,10 +251,7 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
     if (plan !== "free") {
       localStorage.setItem("pendingBusiness", JSON.stringify(nb));
       localStorage.setItem("pendingBusinessData", JSON.stringify({ clients: {}, jobs: {}, staff: {}, invoices: {}, expenses: {}, notifications: {} }));
-      alert('Pending business stored in localStorage');
       const priceId = plan === "pro" ? import.meta.env.VITE_STRIPE_PRO_PRICE_ID : import.meta.env.VITE_STRIPE_BUSINESS_PRICE_ID;
-      alert('About to call handleCheckout with priceId: ' + priceId);
-      alert('Registration complete, calling checkout');
       handleCheckout(priceId);
       return;
     }
@@ -1711,13 +1704,11 @@ export default function App() {
   const [biz, setBiz] = useState(null);
   const handleCheckout = async (p) => {
     setLoading(true);
-    alert('Fetching...');
     try {
       const r = await fetch('https://cleanmanager-pro.vercel.app/api/create-checkout', {
         method: 'POST',
         body: JSON.stringify({ priceId: p })
       });
-      alert('Response status: ' + r.status);
       if (!r.ok) {
         const error = await r.json();
         throw new Error(error.error || `HTTP ${r.status}: ${r.statusText}`);
