@@ -1699,7 +1699,7 @@ export default function App() {
   const handleCheckout = async (p) => {
     setLoading(true);
     try {
-      const r = await fetch('/api/create-checkout', {
+      const r = await fetch('https://cleanmanager-pro.vercel.app/api/create-checkout', {
         method: 'POST',
         body: JSON.stringify({ priceId: p })
       });
