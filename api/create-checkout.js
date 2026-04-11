@@ -8,7 +8,25 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { priceId } = req.body;
+    const parsedBody = req.body ?? JSON.parse(await new Promise((resolve, reject) => {
+      let body = '';
+
+      req.on('data', chunk => {
+        body += chunk;
+      });
+
+      req.on('end', () => {
+        try {
+          resolve(body ? JSON.parse(body) : {});
+        } catch (err) {
+          reject(err);
+        }
+      });
+
+      req.on('error', reject);
+    }));
+
+    const { priceId } = parsedBody;
 
     console.log('Received priceId:', priceId);
     console.log('STRIPE_SECRET_KEY length:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 'undefined');
