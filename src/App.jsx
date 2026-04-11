@@ -234,6 +234,7 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
   };
 
   const signup = () => {
+    alert('Submit clicked');
     setError("");
     if (!bizName.trim() || !email.trim() || !phone.trim()) { setError("Please fill in all required fields."); return; }
     if (newPass.length < 8) { setError("Password must be at least 8 characters."); return; }
