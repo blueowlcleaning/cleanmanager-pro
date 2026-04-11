@@ -1698,11 +1698,13 @@ export default function App() {
   const [biz, setBiz] = useState(null);
   const handleCheckout = async (p) => {
     setLoading(true);
+    alert('Fetching...');
     try {
       const r = await fetch('https://cleanmanager-pro.vercel.app/api/create-checkout', {
         method: 'POST',
         body: JSON.stringify({ priceId: p })
       });
+      alert('Response status: ' + r.status);
       if (!r.ok) {
         const error = await r.json();
         throw new Error(error.error || `HTTP ${r.status}: ${r.statusText}`);
@@ -1711,7 +1713,7 @@ export default function App() {
       window.location.replace(url);
     } catch (error) {
       console.error('Checkout error:', error);
-      alert(`Checkout failed: ${error.message}`);
+      alert('Error: ' + error.message);
       setLoading(false);
     }
   };
