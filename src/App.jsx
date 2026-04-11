@@ -1697,7 +1697,6 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
 export default function App() {
   const [biz, setBiz] = useState(null);
   const handleCheckout = async (p) => {
-    alert(`Starting checkout with priceId: ${p}`);
     try {
       const r = await fetch('/api/create-checkout', {
         method: 'POST',
@@ -1707,10 +1706,7 @@ export default function App() {
         const error = await r.json();
         throw new Error(error.error || `HTTP ${r.status}: ${r.statusText}`);
       }
-      const data = await r.json();
-      console.log('Checkout response data:', data);
-      const { url } = data;
-      alert(`Redirecting to checkout URL: ${url}`);
+      const { url } = await r.json();
       window.location.href = url;
     } catch (error) {
       console.error('Checkout error:', error);
