@@ -1707,7 +1707,10 @@ export default function App() {
         const error = await r.json();
         throw new Error(error.error || `HTTP ${r.status}: ${r.statusText}`);
       }
-      const { url } = await r.json();
+      const data = await r.json();
+      console.log('Checkout response data:', data);
+      const { url } = data;
+      alert(`Redirecting to checkout URL: ${url}`);
       window.location.href = url;
     } catch (error) {
       console.error('Checkout error:', error);
