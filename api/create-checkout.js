@@ -8,23 +8,46 @@ export default async function handler(req, res) {
   }
 
   try {
-    const parsedBody = req.body ?? JSON.parse(await new Promise((resolve, reject) => {
-      let body = '';
+    const rawBody = req.body;
+    console.log('Raw request body:', rawBody);
 
-      req.on('data', chunk => {
-        body += chunk;
-      });
-
-      req.on('end', () => {
+    let parsedBody;
+    if (rawBody) {
+      if (typeof rawBody === 'string') {
         try {
-          resolve(body ? JSON.parse(body) : {});
+          parsedBody = JSON.parse(rawBody);
         } catch (err) {
-          reject(err);
+          console.warn('Failed to parse raw string body with JSON.parse:', err.message);
         }
-      });
+      } else if (typeof rawBody === 'object') {
+        try {
+          parsedBody = JSON.parse(JSON.stringify(rawBody));
+        } catch (err) {
+          console.warn('Failed to parse stringified object body with JSON.parse:', err.message);
+          parsedBody = rawBody;
+        }
+      }
+    }
 
-      req.on('error', reject);
-    }));
+    if (!parsedBody) {
+      parsedBody = rawBody ?? JSON.parse(await new Promise((resolve, reject) => {
+        let body = '';
+
+        req.on('data', chunk => {
+          body += chunk;
+        });
+
+        req.on('end', () => {
+          try {
+            resolve(body ? JSON.parse(body) : {});
+          } catch (err) {
+            reject(err);
+          }
+        });
+
+        req.on('error', reject);
+      }));
+    }
 
     const { priceId } = parsedBody;
 
