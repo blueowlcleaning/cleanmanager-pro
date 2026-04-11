@@ -242,8 +242,15 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
     if (newPass !== confirmPass) { setError("Passwords do not match."); return; }
     if (newPin.length !== 4 || isNaN(newPin)) { setError("PIN must be exactly 4 digits."); return; }
     if (data.businesses.find(b => b.email.toLowerCase() === email.toLowerCase())) { setError("An account already exists with this email."); return; }
-    const nb = { id: generateId(), name: bizName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), address: address.trim(), website: "", companyNo: "", plan, passwordHash: simpleHash(newPass), pin: simpleHash(newPin), isOwner: false, isAdmin: false, suspended: false, exemptFromSubscription: false, createdAt: new Date().toISOString().split("T")[0], trialEnds: plan !== "free" ? new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0] : null };
-    alert('Business object created');
+    let nb;
+    try {
+      nb = { id: generateId(), name: bizName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), address: address.trim(), website: "", companyNo: "", plan, passwordHash: simpleHash(newPass), pin: simpleHash(newPin), isOwner: false, isAdmin: false, suspended: false, exemptFromSubscription: false, createdAt: new Date().toISOString().split("T")[0], trialEnds: plan !== "free" ? new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0] : null };
+      alert('Business object created');
+    } catch (error) {
+      alert('Error creating business object: ' + error.message);
+      console.error('Business creation error:', error);
+      return;
+    }
     // For paid plans, redirect to Stripe before creating account
     if (plan !== "free") {
       localStorage.setItem("pendingBusiness", JSON.stringify(nb));
