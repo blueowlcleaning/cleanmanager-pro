@@ -246,6 +246,7 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
       localStorage.setItem("pendingBusiness", JSON.stringify(nb));
       localStorage.setItem("pendingBusinessData", JSON.stringify({ clients: {}, jobs: {}, staff: {}, invoices: {}, expenses: {}, notifications: {} }));
       const priceId = plan === "pro" ? import.meta.env.VITE_STRIPE_PRO_PRICE_ID : import.meta.env.VITE_STRIPE_BUSINESS_PRICE_ID;
+      alert('Registration complete, calling checkout');
       handleCheckout(priceId);
       return;
     }
