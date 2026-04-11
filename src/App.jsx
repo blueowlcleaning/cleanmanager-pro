@@ -1697,6 +1697,7 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
 export default function App() {
   const [biz, setBiz] = useState(null);
   const handleCheckout = async (p) => {
+    setLoading(true);
     try {
       const r = await fetch('/api/create-checkout', {
         method: 'POST',
@@ -1707,10 +1708,11 @@ export default function App() {
         throw new Error(error.error || `HTTP ${r.status}: ${r.statusText}`);
       }
       const { url } = await r.json();
-      window.location.href = url;
+      window.location.replace(url);
     } catch (error) {
       console.error('Checkout error:', error);
       alert(`Checkout failed: ${error.message}`);
+      setLoading(false);
     }
   };
   const [data, setData] = useState(null);
