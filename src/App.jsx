@@ -1920,7 +1920,6 @@ export default function App() {
 
       {/* CONTENT */}
       <div style={{ flex: 1, padding: "16px 13px 85px", overflowY: "auto" }}>
-        <OutreachAgent/>
       {tab === "agent" && <OutreachAgent/>}
       {tab === "dashboard" && <Dashboard biz={biz} clients={clients} jobs={jobs} invoices={invoices} expenses={expenses} notifications={notifications} setTab={setTab} />}
         {tab === "quote" && <QuoteGen clients={clients} setJobs={setJobs} setInvoices={setInvoices} addNotification={addNotification} />}
