@@ -15,7 +15,18 @@ export default async function handler(req, res) {
     Supermarket: "supermarkets in London",
     Bank: "banks in London",
     "Event Hall": "event halls in London",
-    Residential: "residential property management London"
+    Residential: "residential property management London",
+    Hotels: "hotels in London",
+    Pubs: "pubs in London",
+    Cinemas: "cinemas in London",
+    "Event Centres": "event centres venues in London",
+    Stadiums: "stadiums arenas in London",
+    Schools: "schools in London",
+    Universities: "universities in London",
+    Gyms: "gyms fitness centres in London",
+    "Shopping Centres": "shopping centres malls in London",
+    "Law Firms": "law firms in London",
+    "Accounting Firms": "accounting firms in London"
   };
 
   const query = sectorQueries[sector] || "businesses in London";
