@@ -15,6 +15,10 @@
     {
       "path": "/api/sequence-engine",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/sequence-engine",
+      "schedule": "0 18 * * *"
     }
   ]
 }
