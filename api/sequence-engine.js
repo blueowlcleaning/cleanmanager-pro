@@ -89,7 +89,10 @@ export default async function handler(req, res) {
     const keys = await redis.keys("lead:*");
     const now = Date.now();
     const results = [];
-    for (const key of keys) {
+    let batchCount = 0;
+  const batchLimit = 80;
+  for (const key of keys) {
+    if (batchCount >= batchLimit) break;
       const raw = await redis.get(key);
       const lead = typeof raw === "string" ? JSON.parse(raw) : raw;
       if (!lead || lead.status !== "active") continue;
@@ -128,6 +131,7 @@ export default async function handler(req, res) {
         lastEmailId: emailData.id || null
       }));
       results.push({ email: lead.email, touch: touch.type, success: !!emailData.id });
+      batchCount++;
     }
     return res.status(200).json({ processed: results.length, results });
   }
