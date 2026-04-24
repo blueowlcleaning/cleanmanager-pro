@@ -1,6 +1,7 @@
 import OutreachAgent from "./OutreachAgent.jsx";
 import TrainingCompliance from "./TrainingCompliance.jsx";
 import HotLeads from "./HotLeads.jsx";
+import RepliesInbox from "./RepliesInbox.jsx";
 import { useState, useEffect, useRef, useCallback } from "react";
 
 // ═══════════════════════════════════════════════════════════
@@ -1873,7 +1874,7 @@ export default function App() {
   if (clientPortal) return <ClientPortal biz={biz} clients={clients} jobs={jobs} onExit={() => setClientPortal(false)} />;
   if (biz.plan === "free" && !biz.exemptFromSubscription) return <Pricing biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} />;
 
-  const mainTabs = [{ id: "dashboard", l: "Home", i: "🏠" }, { id: "quote", l: "Quote", i: "💷" }, { id: "jobs", l: "Jobs", i: "🧹" }, { id: "clients", l: "Clients", i: "👥" }, { id: "agent", l: "Agent", i: "🤖" }, { id: "training", l: "Training", i: "📋" }, { id: "pipeline", l: "Pipeline", i: "🔥" }, { id: "more", l: "More", i: "⚙️" }];
+  const mainTabs = [{ id: "dashboard", l: "Home", i: "🏠" }, { id: "quote", l: "Quote", i: "💷" }, { id: "jobs", l: "Jobs", i: "🧹" }, { id: "clients", l: "Clients", i: "👥" }, { id: "agent", l: "Agent", i: "🤖" }, { id: "training", l: "Training", i: "📋" }, { id: "pipeline", l: "Pipeline", i: "🔥" }, { id: "inbox", l: "Inbox", i: "📬" }, { id: "more", l: "More", i: "⚙️" }];
   const moreTabs = [{ id: "invoices", l: "Invoices", i: "💰" }, { id: "staff", l: "Staff", i: "👷" }, { id: "expenses", l: "Expenses", i: "🧾" }, { id: "reports", l: "Reports", i: "📊" }, { id: "reviews", l: "Reviews", i: "⭐" }, { id: "portal", l: "Client Portal", i: "🔐" }, { id: "settings", l: "Settings", i: "⚙️" }];
   const inMore = moreTabs.some(t => t.id === tab);
   const totalNotifs = notifications.length + jobs.filter(j => { const d = (new Date(j.date) - new Date()) / 86400000; return d >= 0 && d <= 3 && !["Completed", "Cancelled"].includes(j.status); }).length;
@@ -1925,6 +1926,7 @@ export default function App() {
       {tab === "agent" && <OutreachAgent/>}
       {tab === "training" && <TrainingCompliance staff={staff}/>}
       {tab === "pipeline" && <HotLeads/>}
+      {tab === "inbox" && <RepliesInbox/>}
       {tab === "dashboard" && <Dashboard biz={biz} clients={clients} jobs={jobs} invoices={invoices} expenses={expenses} notifications={notifications} setTab={setTab} />}
         {tab === "quote" && <QuoteGen clients={clients} setJobs={setJobs} setInvoices={setInvoices} addNotification={addNotification} />}
         {tab === "jobs" && <Jobs jobs={jobs} setJobs={setJobs} clients={clients} setClients={setClients} staff={staff} addNotification={addNotification} />}
