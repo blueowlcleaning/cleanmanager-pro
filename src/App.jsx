@@ -1789,6 +1789,17 @@ export default function App() {
     });
   }, [biz]);
 
+  const syncToSupabase = useCallback(async (key, items, bizId) => {
+    if (!bizId || !items || !Array.isArray(items)) return;
+    try {
+      await fetch("/api/database", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "sync", table: key, items, business_id: bizId })
+      });
+    } catch (e) { console.log("Sync error:", e); }
+  }, []);
+
   const updateData = useCallback((newData) => {
     setData(newData);
     persist(newData);
