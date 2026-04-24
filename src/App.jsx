@@ -1874,8 +1874,8 @@ export default function App() {
   if (clientPortal) return <ClientPortal biz={biz} clients={clients} jobs={jobs} onExit={() => setClientPortal(false)} />;
   if (biz.plan === "free" && !biz.exemptFromSubscription) return <Pricing biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} />;
 
-  const mainTabs = [{ id: "dashboard", l: "Home", i: "🏠" }, { id: "quote", l: "Quote", i: "💷" }, { id: "jobs", l: "Jobs", i: "🧹" }, { id: "clients", l: "Clients", i: "👥" }, { id: "agent", l: "Agent", i: "🤖" }, { id: "training", l: "Training", i: "📋" }, { id: "pipeline", l: "Pipeline", i: "🔥" }, { id: "inbox", l: "Inbox", i: "📬" }, { id: "more", l: "More", i: "⚙️" }];
-  const moreTabs = [{ id: "invoices", l: "Invoices", i: "💰" }, { id: "staff", l: "Staff", i: "👷" }, { id: "expenses", l: "Expenses", i: "🧾" }, { id: "reports", l: "Reports", i: "📊" }, { id: "reviews", l: "Reviews", i: "⭐" }, { id: "portal", l: "Client Portal", i: "🔐" }, { id: "settings", l: "Settings", i: "⚙️" }];
+  const mainTabs = [{ id: "dashboard", l: "Home", i: "🏠" }, { id: "jobs", l: "Jobs", i: "🧹" }, { id: "agent", l: "Agent", i: "🤖" }, { id: "pipeline", l: "Pipeline", i: "🔥" }, { id: "more", l: "More", i: "⚙️" }];
+  const moreTabs = [{ id: "inbox", l: "Inbox", i: "📬" }, { id: "pipeline", l: "Pipeline", i: "🔥" }, { id: "training", l: "Training", i: "📋" }, { id: "invoices", l: "Invoices", i: "💰" }, { id: "staff", l: "Staff", i: "👷" }, { id: "expenses", l: "Expenses", i: "🧾" }, { id: "reports", l: "Reports", i: "📊" }, { id: "reviews", l: "Reviews", i: "⭐" }, { id: "portal", l: "Client Portal", i: "🔐" }, { id: "settings", l: "Settings", i: "⚙️" }];
   const inMore = moreTabs.some(t => t.id === tab);
   const totalNotifs = notifications.length + jobs.filter(j => { const d = (new Date(j.date) - new Date()) / 86400000; return d >= 0 && d <= 3 && !["Completed", "Cancelled"].includes(j.status); }).length;
 
@@ -1927,6 +1927,7 @@ export default function App() {
       {tab === "training" && <TrainingCompliance staff={staff}/>}
       {tab === "pipeline" && <HotLeads/>}
       {tab === "inbox" && <RepliesInbox/>}
+      {tab === "more" && <div style={{fontFamily:"system-ui,sans-serif",background:"#f5f5f5",minHeight:"100vh",paddingBottom:100}}><div style={{background:"#0A1F44",padding:"52px 16px 16px"}}><div style={{fontSize:11,color:"#C9A84C",textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:4}}>Blue Owl</div><div style={{fontSize:20,fontWeight:800,color:"#fff"}}>More</div></div><div style={{padding:16,display:"flex",flexDirection:"column",gap:10}}>{[{id:"inbox",l:"Inbox",i:"📬"},{id:"pipeline",l:"Pipeline",i:"🔥"},{id:"training",l:"Training",i:"📋"},{id:"invoices",l:"Invoices",i:"💰"},{id:"staff",l:"Staff",i:"👷"},{id:"expenses",l:"Expenses",i:"🧾"},{id:"reports",l:"Reports",i:"📊"},{id:"reviews",l:"Reviews",i:"⭐"},{id:"settings",l:"Settings",i:"⚙️"}].map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{display:"flex",alignItems:"center",gap:14,background:"#fff",border:"none",borderRadius:14,padding:"16px",cursor:"pointer",boxShadow:"0 2px 6px rgba(0,0,0,0.05)",textAlign:"left"}}><span style={{fontSize:24}}>{t.i}</span><span style={{fontSize:15,fontWeight:600,color:"#0A1F44"}}>{t.l}</span><span style={{marginLeft:"auto",color:"#ccc"}}>›</span></button>))}<button onClick={handleLogout} style={{display:"flex",alignItems:"center",gap:14,background:"#fff",border:"1px solid #ffeeee",borderRadius:14,padding:"16px",cursor:"pointer",textAlign:"left",marginTop:8}}><span style={{fontSize:24}}>🚪</span><span style={{fontSize:15,fontWeight:600,color:"#e74c3c"}}>Log Out</span></button></div></div>}
       {tab === "dashboard" && <Dashboard biz={biz} clients={clients} jobs={jobs} invoices={invoices} expenses={expenses} notifications={notifications} setTab={setTab} />}
         {tab === "quote" && <QuoteGen clients={clients} setJobs={setJobs} setInvoices={setInvoices} addNotification={addNotification} />}
         {tab === "jobs" && <Jobs jobs={jobs} setJobs={setJobs} clients={clients} setClients={setClients} staff={staff} addNotification={addNotification} />}
@@ -1944,7 +1945,7 @@ export default function App() {
         {mainTabs.map(t => {
           const active = tab === t.id || (t.id === "more" && inMore);
           return (
-            <button key={t.id} onClick={() => t.id === "more" ? setMoreOpen(!moreOpen) : (setTab(t.id), setMoreOpen(false))}
+            <button key={t.id} onClick={() => t.id === "more" ? setTab("more") : (setTab(t.id), setMoreOpen(false))}
               style={{ flex: 1, border: "none", background: "none", padding: "9px 4px 7px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
               <span style={{ fontSize: 19 }}>{t.i}</span>
               <span style={{ fontSize: 10, fontWeight: active ? 800 : 500, color: active ? T.navy : T.muted, fontFamily: "inherit" }}>{t.l}</span>
