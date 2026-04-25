@@ -1582,7 +1582,7 @@ function Pricing({ biz, onUpgrade, onLogout, handleCheckout }) {
   ];
 
   return (
-    <div style={{ background: T.cream, minHeight: "100vh", fontFamily: "'DM Sans','Segoe UI',sans-serif", maxWidth: 480, margin: "0 auto", display: "flex", flexDirection: "column" }}>
+    <div style={{ background: T.cream, minHeight: "100vh", fontFamily: "'DM Sans','Segoe UI',sans-serif", maxWidth: 480, margin: "0 auto", display: "flex", flexDirection: "column", overflowX: "hidden", width: "100%" }}>
       {/* TOP BAR */}
       <div style={{ background: T.navy, padding: "13px 16px 11px", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>

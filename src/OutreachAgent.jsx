@@ -125,7 +125,7 @@ return(
 })}
 </div>}
 
-{tab==="Preview"&&<div>
+{leads.length>page&&<button onClick={()=>setPage(p=>p+20)} style={{width:"100%",padding:"12px",background:"rgba(74,158,255,0.08)",border:"1px solid rgba(74,158,255,0.2)",borderRadius:12,color:"#4a9eff",fontSize:13,fontWeight:600,cursor:"pointer",marginTop:12}}>Load more ({leads.length-page} remaining)</button>}{tab==="Preview"&&<div>
 <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:14}}>
 {["Restaurant","Hospital","Care Home","Office","Warehouse","Cafe","Corporate","Hotel","School","Gym","Law Firm"].map(s=>(<button key={s} onClick={()=>setTarget(s)} style={{padding:"6px 12px",background:target===s?"rgba(74,158,255,0.15)":"rgba(255,255,255,0.04)",border:"1px solid "+(target===s?"rgba(74,158,255,0.4)":"rgba(255,255,255,0.08)"),borderRadius:100,color:target===s?T.blue:"#555",fontSize:11,cursor:"pointer"}}>{s}</button>))}
 </div>
