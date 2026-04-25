@@ -12,7 +12,11 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
       const payload = req.body;
-      const reply = {
+      // Filter out empty Resend ping notifications
+    if (!payload.from || payload.from === "Unknown" || !payload.text) {
+      return res.status(200).json({ success: true, ignored: true });
+    }
+    const reply = {
         id: "reply_" + Date.now(),
         from: payload.from || "Unknown",
         subject: payload.subject || "No subject",
