@@ -25,8 +25,8 @@ const fetchStats=async()=>{
     const sent=ls.filter(l=>l.touchIndex>=1).length;
     const opens=ls.filter(l=>l.opens>0).length;
     const replies=ls.filter(l=>l.replies>0).length;
-    setStats({total:d.total||0,active:d.active||0,sent,opens,replies});
-    setLeads(ls.slice(0,20));
+    setStats({total:d.total||0,active:d.active||0,sent:d.total||0,opens,replies});
+    setLeads([...ls].sort((a,b)=>(b.lastSentAt||0)-(a.lastSentAt||0)).slice(0,20));
     setLoading(false);
   }catch(e){setLoading(false);}
 };
