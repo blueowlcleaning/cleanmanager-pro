@@ -146,7 +146,7 @@ export default async function handler(req, res) {
       total: leads.length,
       active: leads.filter(l => l && l.status === "active").length,
       completed: leads.filter(l => l && l.status === "completed").length,
-      leads: leads.slice(0, 20)
+      leads: leads.slice(0, 100)
     });
   }
 
