@@ -1711,6 +1711,7 @@ export default function App() {
     try {
       const r = await fetch('https://cleanmanager-pro.vercel.app/api/create-checkout', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ priceId: p })
       });
       if (!r.ok) {
