@@ -269,7 +269,7 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
   ];
 
   return (
-    <div style={{ background: `linear-gradient(160deg, ${T.navy} 0%, #1a3060 100%)`, minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px", fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>
+    <div style={{ background: `linear-gradient(160deg, ${T.navy} 0%, #1a3060 100%)`, minHeight: "100vh", touchAction: "manipulation", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px", fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>
       <div style={{ width: 68, height: 68, background: T.gold, borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38, marginBottom: 14, boxShadow: "0 8px 32px rgba(201,168,76,0.4)" }}>🦉</div>
       <h1 style={{ color: T.white, fontSize: 26, fontWeight: 800, margin: "0 0 4px", textAlign: "center" }}>CleanManager Pro</h1>
       <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, margin: "0 0 36px", textAlign: "center" }}>Business management for cleaning companies</p>
