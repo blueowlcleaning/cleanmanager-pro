@@ -61,7 +61,7 @@ export default async function handler(req, res) {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
-      subscription_data: { trial_period_days: 14 },
+      
       success_url: 'https://cleanmanager-pro.vercel.app/?success=true',
       cancel_url: 'https://cleanmanager-pro.vercel.app/?cancelled=true',
     });
