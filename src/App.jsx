@@ -1,5 +1,23 @@
 import OutreachAgent from "./OutreachAgent.jsx";
 import { supabase } from "./supabase.js";
+
+// Push notification helper
+async function registerPush() {
+  try {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return null;
+    const reg = await navigator.serviceWorker.register("/sw.js");
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return null;
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY
+    });
+    return sub;
+  } catch(e) {
+    console.log("Push registration error:", e);
+    return null;
+  }
+}
 import TrainingCompliance from "./TrainingCompliance.jsx";
 import HotLeads from "./HotLeads.jsx";
 import RepliesInbox from "./RepliesInbox.jsx";
