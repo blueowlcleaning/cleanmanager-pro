@@ -1,4 +1,5 @@
 import OutreachAgent from "./OutreachAgent.jsx";
+import { supabase } from "./supabase.js";
 import TrainingCompliance from "./TrainingCompliance.jsx";
 import HotLeads from "./HotLeads.jsx";
 import RepliesInbox from "./RepliesInbox.jsx";
@@ -1706,6 +1707,18 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
 // ═══════════════════════════════════════════════════════════
 export default function App() {
   const [biz, setBiz] = useState(null);
+  const [supaSession, setSupaSession] = useState(null);
+
+  // Supabase Auth session listener
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSupaSession(session);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSupaSession(session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
   const handleCheckout = async (p) => {
     setLoading(true);
     try {
