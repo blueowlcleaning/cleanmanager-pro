@@ -385,13 +385,13 @@ function ClientPortal({ biz, clients, jobs, onExit }) {
   const [client, setClient] = useState(null);
 
   const loginWithPin = () => {
-    const found = clients.find(c => c.pin === pinInput);
+    const found = clients.find(c => String(c.pin) === String(pinInput));
     if (found) { setClient(found); setStep("portal"); setError(""); }
     else setError("PIN not recognised. Please contact " + biz.name + ".");
   };
 
   const loginWithEmail = () => {
-    const found = clients.find(c => c.email.toLowerCase() === emailInput.toLowerCase());
+    const found = clients.find(c => c.email && c.email.toLowerCase() === emailInput.toLowerCase());
     if (found) { setClient(found); setStep("portal"); setError(""); }
     else setError("Email not found. Please contact " + biz.name + ".");
   };
@@ -803,6 +803,7 @@ function Jobs({ jobs, setJobs, clients, setClients, staff, addNotification }) {
   const [clientMode, setClientMode] = useState("existing");
   const [newClientName, setNewClientName] = useState("");
   const [newClientPhone, setNewClientPhone] = useState("");
+  const [newClientEmail, setNewClientEmail] = useState("");
   const [gpsModal, setGpsModal] = useState(null);
   const [gpsLoading, setGpsLoading] = useState(false);
   const [form, setForm] = useState({ clientId: clients[0]?.id || "", title: "", date: "", time: "09:00", status: "Pending", value: "", notes: "", staffIds: [], recurring: "none" });
@@ -814,7 +815,7 @@ function Jobs({ jobs, setJobs, clients, setClients, staff, addNotification }) {
     if (!form.title.trim()) return;
     let cId = form.clientId;
     if (clientMode === "new" && newClientName.trim()) {
-      const nc = { id: generateId(), name: newClientName.trim(), phone: newClientPhone.trim(), email: "", address: "", type: "Domestic", notes: "", pin: generatePin(), createdAt: new Date().toISOString().split("T")[0] };
+      const nc = { id: generateId(), name: newClientName.trim(), phone: newClientPhone.trim(), email: newClientEmail.trim(), address: "", type: "Domestic", notes: "", pin: generatePin(), createdAt: new Date().toISOString().split("T")[0] };
       setClients(prev => [...prev, nc]);
       cId = nc.id;
     }
@@ -825,7 +826,7 @@ function Jobs({ jobs, setJobs, clients, setClients, staff, addNotification }) {
       setJobs([...jobs, { ...d, id: generateId(), photos: [], checkins: [] }]);
       addNotification(`New job added: ${form.title}`);
     }
-    setShowForm(false); setEditing(null); setClientMode("existing"); setNewClientName(""); setNewClientPhone("");
+    setShowForm(false); setEditing(null); setClientMode("existing"); setNewClientName(""); setNewClientPhone(""); setNewClientEmail("");
   };
 
   const addPhoto = (jobId, file) => {
@@ -870,6 +871,7 @@ function Jobs({ jobs, setJobs, clients, setClients, staff, addNotification }) {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <input value={newClientName} onChange={e => setNewClientName(e.target.value)} placeholder="Client name *" style={{ width: "100%", border: `1.5px solid ${T.gold}`, borderRadius: 9, padding: "10px 13px", fontSize: 14, fontFamily: "inherit", color: T.navy, background: T.cream, outline: "none", boxSizing: "border-box" }} />
                 <input value={newClientPhone} onChange={e => setNewClientPhone(e.target.value)} placeholder="Phone number" style={{ width: "100%", border: `1.5px solid ${T.light}`, borderRadius: 9, padding: "10px 13px", fontSize: 14, fontFamily: "inherit", color: T.navy, background: T.cream, outline: "none", boxSizing: "border-box" }} />
+                <input value={newClientEmail} onChange={e => setNewClientEmail(e.target.value)} placeholder="Email address (for client portal)" style={{ width: "100%", border: `1.5px solid ${T.light}`, borderRadius: 9, padding: "10px 13px", fontSize: 14, fontFamily: "inherit", color: T.navy, background: T.cream, outline: "none", boxSizing: "border-box" }} />
               </div>
             ) : (
               <select value={form.clientId} onChange={e => setForm({ ...form, clientId: e.target.value })} style={{ width: "100%", border: `1.5px solid ${T.light}`, borderRadius: 9, padding: "10px 13px", fontSize: 14, fontFamily: "inherit", color: T.navy, background: T.cream, outline: "none", boxSizing: "border-box" }}>
