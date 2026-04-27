@@ -377,12 +377,16 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
 // CLIENT PORTAL
 // ═══════════════════════════════════════════════════════════
 function ClientPortal({ biz, clients, jobs, onExit }) {
-  const [step, setStep] = useState("method"); // method | pin | password | portal
+  const [step, setStep] = useState("method");
   const [method, setMethod] = useState("pin");
   const [pinInput, setPinInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [error, setError] = useState("");
   const [client, setClient] = useState(null);
+  const [portalTab, setPortalTab] = useState("bookings");
+  const [rating, setRating] = useState(0);
+  const [request, setRequest] = useState("");
+  const [requestSent, setRequestSent] = useState(false);
 
   const loginWithPin = () => {
     const found = clients.find(c => String(c.pin) === String(pinInput));
@@ -400,11 +404,6 @@ function ClientPortal({ biz, clients, jobs, onExit }) {
     const myJobs = jobs.filter(j => j.clientId === client.id).sort((a, b) => b.date.localeCompare(a.date));
     const upcoming = myJobs.filter(j => !["Completed", "Cancelled"].includes(j.status));
     const past = myJobs.filter(j => j.status === "Completed");
-    const [portalTab, setPortalTab] = React.useState("bookings");
-    const [rating, setRating] = React.useState(0);
-    const [ratingJob, setRatingJob] = React.useState(null);
-    const [request, setRequest] = React.useState("");
-    const [requestSent, setRequestSent] = React.useState(false);
     return (
       <div style={{ background: T.cream, minHeight: "100vh", fontFamily: "'DM Sans','Segoe UI',sans-serif", maxWidth: 480, margin: "0 auto", overflowX: "hidden" }}>
         <div style={{ background: T.navy, padding: "16px 18px 14px" }}>
