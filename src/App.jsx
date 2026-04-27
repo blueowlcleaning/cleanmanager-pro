@@ -253,7 +253,7 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
       });
       if (authError) { setError(authError.message); setSubmitting(false); return; }
       const userId = authData.user?.id || generateId();
-      const nb = { id: userId, name: bizName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), address: address.trim(), website: "", companyNo: "", plan, isOwner: true, isAdmin: true, suspended: false, exemptFromSubscription: false, createdAt: new Date().toISOString().split("T")[0] };
+      const nb = { id: userId, name: bizName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), address: address.trim(), website: "", companyNo: "", plan, isOwner: true, isAdmin: false, suspended: false, exemptFromSubscription: false, createdAt: new Date().toISOString().split("T")[0] };
       if (plan !== "free") {
         localStorage.setItem("pendingBusiness", JSON.stringify(nb));
         localStorage.setItem("pendingBusinessData", JSON.stringify({ clients: {}, jobs: {}, staff: {}, invoices: {}, expenses: {}, notifications: {} }));
