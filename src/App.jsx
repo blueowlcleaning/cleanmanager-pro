@@ -225,17 +225,34 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
   const [error, setError] = useState("");
   const [showPass, setShowPass] = useState(false);
 
-  const login = () => {
+  const [loggingIn, setLoggingIn] = useState(false);
+  const login = async () => {
     setError("");
-    const biz = data.businesses.find(b => b.email.toLowerCase() === email.toLowerCase());
-    if (!biz) { setError("No account found with that email address."); return; }
-    if (biz.suspended) { setError("This account has been suspended. Please contact support."); return; }
-    if (loginMethod === "password") {
-      if (biz.passwordHash !== simpleHash(password)) { setError("Incorrect password."); return; }
-    } else {
-      if (biz.pin !== simpleHash(pin)) { setError("Incorrect PIN."); return; }
+    setLoggingIn(true);
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password: password,
+      });
+      if (!authError && authData.user) {
+        const u = authData.user;
+        const meta = u.user_metadata || {};
+        const nb = { id: u.id, name: meta.company_name || email.split("@")[0], email: u.email, phone: meta.phone || "", address: meta.address || "", plan: meta.plan || "free", isOwner: true, isAdmin: false, suspended: false, exemptFromSubscription: false, createdAt: u.created_at?.split("T")[0] || new Date().toISOString().split("T")[0] };
+        setLoggingIn(false);
+        onLogin(nb, nb);
+        return;
+      }
+      // Fallback to legacy auth
+      const biz = data?.businesses ? Object.values(data.businesses).find(b => b.email && b.email.toLowerCase() === email.toLowerCase()) : null;
+      if (!biz) { setError("No account found. Please check your email and password."); setLoggingIn(false); return; }
+      if (biz.suspended) { setError("This account has been suspended."); setLoggingIn(false); return; }
+      if (biz.passwordHash !== simpleHash(password)) { setError("Incorrect password."); setLoggingIn(false); return; }
+      setLoggingIn(false);
+      onLogin(biz);
+    } catch(e) {
+      setError("Login failed. Please try again.");
+      setLoggingIn(false);
     }
-    onLogin(biz);
   };
 
   const [submitting, setSubmitting] = useState(false);
@@ -346,7 +363,7 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
             : <Inp label="4-Digit PIN" type="number" value={pin} onChange={v => setPin(v.slice(0, 4))} placeholder="••••" style={{ background: "rgba(255,255,255,0.08)", color: T.white, border: "1.5px solid rgba(255,255,255,0.15)", fontSize: 22, letterSpacing: 8, textAlign: "center" }} />
           }
           {error && <div style={{ background: "rgba(192,57,43,0.2)", border: "1px solid rgba(192,57,43,0.4)", borderRadius: 8, padding: "8px 12px", color: "#ff8a80", fontSize: 13, marginBottom: 12 }}>{error}</div>}
-          <Btn full variant="gold" onClick={login}>Sign In</Btn>
+          <Btn full variant="gold" onClick={login} disabled={loggingIn}>{loggingIn ? "Signing in..." : "Sign In"}</Btn>
           <div style={{ textAlign: "center", marginTop: 16 }}>
             <button onClick={() => setMode("plans")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>New business? Sign up free →</button>
           </div>
