@@ -238,34 +238,35 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
     onLogin(biz);
   };
 
+  const [submitting, setSubmitting] = useState(false);
   const signup = async () => {
     setError("");
     if (!bizName.trim() || !email.trim() || !phone.trim()) { setError("Please fill in all required fields."); return; }
     if (newPass.length < 8) { setError("Password must be at least 8 characters."); return; }
     if (newPass !== confirmPass) { setError("Passwords do not match."); return; }
-    setLoading(true);
+    setSubmitting(true);
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password: newPass,
         options: { data: { company_name: bizName.trim(), phone: phone.trim(), address: address.trim(), plan } }
       });
-      if (authError) { setError(authError.message); setLoading(false); return; }
+      if (authError) { setError(authError.message); setSubmitting(false); return; }
       const userId = authData.user?.id || generateId();
       const nb = { id: userId, name: bizName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), address: address.trim(), website: "", companyNo: "", plan, isOwner: true, isAdmin: true, suspended: false, exemptFromSubscription: false, createdAt: new Date().toISOString().split("T")[0] };
       if (plan !== "free") {
         localStorage.setItem("pendingBusiness", JSON.stringify(nb));
         localStorage.setItem("pendingBusinessData", JSON.stringify({ clients: {}, jobs: {}, staff: {}, invoices: {}, expenses: {}, notifications: {} }));
         const priceId = plan === "pro" ? import.meta.env.VITE_STRIPE_PRO_PRICE_ID : import.meta.env.VITE_STRIPE_BUSINESS_PRICE_ID;
-        setLoading(false);
+        setSubmitting(false);
         handleCheckout(priceId);
         return;
       }
-      setLoading(false);
+      setSubmitting(false);
       onLogin(nb, nb);
     } catch(e) {
       setError("Signup failed. Please try again.");
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -320,7 +321,7 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
             <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>Show passwords</span>
           </label>
           {error && <div style={{ background: "rgba(192,57,43,0.2)", border: "1px solid rgba(192,57,43,0.4)", borderRadius: 8, padding: "8px 12px", color: "#ff8a80", fontSize: 13, marginBottom: 12 }}>{error}</div>}
-          <Btn full variant="gold" onClick={signup}>Create Account</Btn>
+          <Btn full variant="gold" onClick={signup} disabled={submitting}>{submitting ? "Creating Account..." : "Create Account"}</Btn>
           <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: "10px 14px", marginTop: 14 }}>
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, margin: 0 }}>📧 A welcome email with your PIN and login details will be sent automatically on sign up.</p>
           </div>
