@@ -1903,7 +1903,7 @@ export default function App() {
   if (!biz) return <AuthScreen onLogin={handleLogin} data={data} handleCheckout={handleCheckout} />;
   if (biz.isAdmin) return <AdminPanel data={data} onDataChange={updateData} onLogout={handleLogout} />;
   if (clientPortal) return <ClientPortal biz={biz} clients={clients} jobs={jobs} onExit={() => setClientPortal(false)} />;
-  if (biz.plan === "free" && !biz.exemptFromSubscription) return <Pricing biz={biz} onLogout={handleLogout} handleCheckout={handleCheckout} />;
+  // Free plan goes straight to app
 
   const mainTabs = [{ id: "dashboard", l: "Home", i: "🏠" }, { id: "jobs", l: "Jobs", i: "🧹" }, { id: "agent", l: "Agent", i: "🤖" }, { id: "pipeline", l: "Pipeline", i: "🔥" }, { id: "more", l: "More", i: "⚙️" }];
   const moreTabs = [{ id: "inbox", l: "Inbox", i: "📬" }, { id: "pipeline", l: "Pipeline", i: "🔥" }, { id: "training", l: "Training", i: "📋" }, { id: "invoices", l: "Invoices", i: "💰" }, { id: "staff", l: "Staff", i: "👷" }, { id: "expenses", l: "Expenses", i: "🧾" }, { id: "reports", l: "Reports", i: "📊" }, { id: "reviews", l: "Reviews", i: "⭐" }, { id: "portal", l: "Client Portal", i: "🔐" }, { id: "settings", l: "Settings", i: "⚙️" }];
