@@ -383,8 +383,13 @@ function ClientPortal({ biz, clients, jobs, onExit }) {
     const myJobs = jobs.filter(j => j.clientId === client.id).sort((a, b) => b.date.localeCompare(a.date));
     const upcoming = myJobs.filter(j => !["Completed", "Cancelled"].includes(j.status));
     const past = myJobs.filter(j => j.status === "Completed");
+    const [portalTab, setPortalTab] = React.useState("bookings");
+    const [rating, setRating] = React.useState(0);
+    const [ratingJob, setRatingJob] = React.useState(null);
+    const [request, setRequest] = React.useState("");
+    const [requestSent, setRequestSent] = React.useState(false);
     return (
-      <div style={{ background: T.cream, minHeight: "100vh", fontFamily: "'DM Sans','Segoe UI',sans-serif", maxWidth: 480, margin: "0 auto" }}>
+      <div style={{ background: T.cream, minHeight: "100vh", fontFamily: "'DM Sans','Segoe UI',sans-serif", maxWidth: 480, margin: "0 auto", overflowX: "hidden" }}>
         <div style={{ background: T.navy, padding: "16px 18px 14px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
@@ -393,38 +398,116 @@ function ClientPortal({ biz, clients, jobs, onExit }) {
             </div>
             <button onClick={() => { setClient(null); setStep("method"); setPinInput(""); setEmailInput(""); }} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: T.white, borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontSize: 12, fontFamily: "inherit" }}>Sign Out</button>
           </div>
-        </div>
-        <div style={{ padding: "20px 16px 40px" }}>
-          {upcoming.length > 0 && <>
-            <h3 style={{ color: T.navy, fontSize: 15, fontWeight: 800, marginBottom: 12 }}>📅 Upcoming Bookings</h3>
-            {upcoming.map(j => (
-              <Card key={j.id} style={{ marginBottom: 10, borderLeft: `4px solid ${T.gold}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <div style={{ fontWeight: 800, color: T.navy, fontSize: 14, marginBottom: 4 }}>{j.title}</div>
-                    <div style={{ fontSize: 13, color: T.muted }}>📅 {j.date} at {j.time}</div>
-                    {j.notes && <div style={{ fontSize: 12, color: T.muted, marginTop: 4, fontStyle: "italic" }}>{j.notes}</div>}
-                  </div>
-                  <Badge status={j.status} />
-                </div>
-              </Card>
+          <div style={{ display: "flex", gap: 6, marginTop: 14 }}>
+            {[["bookings","📅","Bookings"],["invoices","💰","Invoices"],["request","✉️","Request"],["rate","⭐","Rate Us"]].map(([id,icon,label]) => (
+              <button key={id} onClick={() => setPortalTab(id)} style={{ flex: 1, padding: "7px 2px", borderRadius: 8, border: "none", background: portalTab === id ? T.gold : "rgba(255,255,255,0.1)", color: portalTab === id ? T.navy : "rgba(255,255,255,0.6)", fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase", letterSpacing: 0.5 }}>{icon}<br/>{label}</button>
             ))}
+          </div>
+        </div>
+        <div style={{ padding: "20px 16px 80px" }}>
+
+          {portalTab === "bookings" && <>
+            {upcoming.length > 0 && <>
+              <h3 style={{ color: T.navy, fontSize: 15, fontWeight: 800, marginBottom: 12 }}>📅 Upcoming Bookings</h3>
+              {upcoming.map(j => (
+                <Card key={j.id} style={{ marginBottom: 10, borderLeft: `4px solid ${T.gold}` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div>
+                      <div style={{ fontWeight: 800, color: T.navy, fontSize: 14, marginBottom: 4 }}>{j.title}</div>
+                      <div style={{ fontSize: 13, color: T.muted }}>📅 {j.date} {j.time ? "at " + j.time : ""}</div>
+                      {j.notes && <div style={{ fontSize: 12, color: T.muted, marginTop: 4, fontStyle: "italic" }}>{j.notes}</div>}
+                    </div>
+                    <Badge status={j.status} />
+                  </div>
+                </Card>
+              ))}
+            </>}
+            {past.length > 0 && <>
+              <h3 style={{ color: T.navy, fontSize: 15, fontWeight: 800, margin: "20px 0 12px" }}>✅ Previous Cleans</h3>
+              {past.slice(0, 10).map(j => (
+                <Card key={j.id} style={{ marginBottom: 10 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontWeight: 700, color: T.navy, fontSize: 13 }}>{j.title}</div>
+                      <div style={{ fontSize: 12, color: T.muted }}>📅 {j.date}</div>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <Badge status={j.status} />
+                      {j.amount && <span style={{ fontSize: 13, fontWeight: 700, color: T.green }}>£{j.amount}</span>}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </>}
+            {myJobs.length === 0 && <Card style={{ textAlign: "center", padding: 30 }}><div style={{ fontSize: 36, marginBottom: 10 }}>📋</div><p style={{ color: T.muted }}>No bookings yet. Contact us to arrange your first clean.</p></Card>}
           </>}
-          {past.length > 0 && <>
-            <h3 style={{ color: T.navy, fontSize: 15, fontWeight: 800, margin: "20px 0 12px" }}>✅ Previous Cleans</h3>
-            {past.slice(0, 5).map(j => (
+
+          {portalTab === "invoices" && <>
+            <h3 style={{ color: T.navy, fontSize: 15, fontWeight: 800, marginBottom: 12 }}>💰 Your Invoices</h3>
+            {myJobs.filter(j => j.amount).length === 0 && <Card style={{ textAlign: "center", padding: 30 }}><div style={{ fontSize: 36, marginBottom: 10 }}>🧾</div><p style={{ color: T.muted }}>No invoices yet.</p></Card>}
+            {myJobs.filter(j => j.amount).map(j => (
               <Card key={j.id} style={{ marginBottom: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div>
-                    <div style={{ fontWeight: 700, color: T.navy, fontSize: 13 }}>{j.title}</div>
+                    <div style={{ fontWeight: 700, color: T.navy, fontSize: 14 }}>{j.title}</div>
                     <div style={{ fontSize: 12, color: T.muted }}>📅 {j.date}</div>
                   </div>
-                  <Badge status={j.status} />
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontWeight: 800, fontSize: 16, color: j.status === "Completed" ? T.green : T.gold }}>£{j.amount}</div>
+                    <div style={{ fontSize: 11, color: j.status === "Completed" ? T.green : T.gold }}>{j.status === "Completed" ? "Paid" : "Due"}</div>
+                  </div>
                 </div>
               </Card>
             ))}
+            <Card style={{ marginTop: 16, background: "#f0fdf4", border: "1px solid #bbf7d0" }}>
+              <div style={{ fontSize: 13, color: T.navy, fontWeight: 700, marginBottom: 4 }}>💳 Pay by Bank Transfer</div>
+              <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.6 }}>
+                Bank: Blue Owl Cleaning Ltd<br/>
+                Sort Code: 30-54-66<br/>
+                Account: 41703768<br/>
+                Ref: Your name + invoice date
+              </div>
+            </Card>
           </>}
-          {myJobs.length === 0 && <Card style={{ textAlign: "center", padding: 30 }}><div style={{ fontSize: 36, marginBottom: 10 }}>📋</div><p style={{ color: T.muted }}>No bookings yet. Contact us to arrange your first clean.</p></Card>}
+
+          {portalTab === "request" && <>
+            <h3 style={{ color: T.navy, fontSize: 15, fontWeight: 800, marginBottom: 8 }}>✉️ Request a Clean</h3>
+            <p style={{ color: T.muted, fontSize: 13, marginBottom: 16 }}>Need an extra clean, a deep clean, or want to change your schedule? Let us know below.</p>
+            {requestSent ? (
+              <Card style={{ textAlign: "center", padding: 30, background: "#f0fdf4", border: "1px solid #bbf7d0" }}>
+                <div style={{ fontSize: 40, marginBottom: 10 }}>✅</div>
+                <div style={{ fontWeight: 800, color: T.navy, fontSize: 16 }}>Request Sent!</div>
+                <p style={{ color: T.muted, fontSize: 13 }}>{biz.name} will be in touch shortly.</p>
+              </Card>
+            ) : (
+              <>
+                <textarea value={request} onChange={e => setRequest(e.target.value)} placeholder="e.g. I need a deep clean before Christmas on 20th December. Please can you also clean the windows?" style={{ width: "100%", minHeight: 120, border: "1.5px solid " + T.light, borderRadius: 9, padding: "10px 13px", fontSize: 14, fontFamily: "inherit", color: T.navy, background: T.cream, outline: "none", boxSizing: "border-box", resize: "vertical" }} />
+                <Btn full variant="navy" style={{ marginTop: 12 }} onClick={() => { if (request.trim()) setRequestSent(true); }}>Send Request</Btn>
+              </>
+            )}
+          </>}
+
+          {portalTab === "rate" && <>
+            <h3 style={{ color: T.navy, fontSize: 15, fontWeight: 800, marginBottom: 8 }}>⭐ Rate Your Experience</h3>
+            <p style={{ color: T.muted, fontSize: 13, marginBottom: 20 }}>How would you rate your most recent clean?</p>
+            {past.length === 0 ? (
+              <Card style={{ textAlign: "center", padding: 30 }}><p style={{ color: T.muted }}>No completed cleans to rate yet.</p></Card>
+            ) : (
+              <>
+                <Card style={{ marginBottom: 16 }}>
+                  <div style={{ fontWeight: 700, color: T.navy, marginBottom: 12 }}>Most recent: {past[0].title}</div>
+                  <div style={{ display: "flex", gap: 8, justifyContent: "center", fontSize: 36 }}>
+                    {[1,2,3,4,5].map(s => (
+                      <button key={s} onClick={() => setRating(s)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 36, opacity: s <= rating ? 1 : 0.25, transition: "opacity 0.15s" }}>⭐</button>
+                    ))}
+                  </div>
+                  {rating > 0 && <div style={{ textAlign: "center", marginTop: 12, color: T.navy, fontWeight: 700 }}>{["","Poor","Fair","Good","Great","Excellent!"][rating]}</div>}
+                </Card>
+                {rating > 0 && <Btn full variant="gold" onClick={() => alert("Thank you for your " + rating + "-star review! We really appreciate it.")}>Submit Review</Btn>}
+              </>
+            )}
+          </>}
+
           <Card style={{ marginTop: 24, textAlign: "center", background: T.navy }}>
             <div style={{ color: T.gold, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 4 }}>Your Cleaning Company</div>
             <div style={{ color: T.white, fontWeight: 800, fontSize: 15, marginBottom: 4 }}>{biz.name}</div>
