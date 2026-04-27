@@ -262,6 +262,7 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
         handleCheckout(priceId);
         return;
       }
+      fetch("/api/welcome-email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:nb.name,email:nb.email,company:nb.name})}).catch(e=>console.log(e));
       setSubmitting(false);
       onLogin(nb, nb);
     } catch(e) {
