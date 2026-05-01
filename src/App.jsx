@@ -1,5 +1,6 @@
 import OutreachAgent from "./OutreachAgent.jsx";
 import { supabase } from "./supabase.js";
+import Privacy from "./Privacy.jsx";
 
 // Push notification helper
 async function registerPush() {
@@ -2006,6 +2007,7 @@ export default function App() {
     persist(newData);
   };
 
+  if (window.location.pathname === "/privacy") return <Privacy />;
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0A1F44", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "Arial" }}>
       <div style={{ fontSize: 56, marginBottom: 16 }}>🦉</div>
