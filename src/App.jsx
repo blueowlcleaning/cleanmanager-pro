@@ -1240,18 +1240,56 @@ function QuoteGen({ clients, setJobs, setInvoices, addNotification }) {
 // ═══════════════════════════════════════════════════════════
 // INVOICES
 // ═══════════════════════════════════════════════════════════
-function Invoices({ invoices, setInvoices, clients, addNotification }) {
+function Invoices({ invoices, setInvoices, clients, addNotification, biz }) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ clientId: clients[0]?.id || "", amount: "", deposit: "0", status: "Unpaid", issued: new Date().toISOString().split("T")[0], due: "" });
   const [editing, setEditing] = useState(null);
   const total = invoices.reduce((s, i) => s + i.amount, 0);
   const paid = invoices.filter(i => i.status === "Paid").reduce((s, i) => s + i.amount, 0);
 
+  const syncToSupabase = async (invoice, client) => {
+    try {
+      await fetch("/api/database", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: invoice._synced ? "update" : "insert",
+          table: "invoices",
+          business_id: biz?.id || "blueowl",
+          id: invoice.id,
+          data: {
+            id: invoice.id,
+            amount: invoice.amount,
+            deposit: invoice.deposit || 0,
+            status: invoice.status,
+            issued: invoice.issued,
+            due_date: invoice.due,
+            client_id: invoice.clientId,
+            client_name: client?.name || "",
+            client_email: client?.email || "",
+            business_name: biz?.name || "",
+            invoice_number: invoice.invoiceNumber || "",
+            business_id: biz?.id || "blueowl",
+          }
+        })
+      });
+    } catch(e) { console.log("Invoice sync error:", e); }
+  };
+
   const save = () => {
     if (!form.amount) return;
-    const d = { ...form, amount: Number(form.amount), deposit: Number(form.deposit), clientId: form.clientId };
-    if (editing) setInvoices(invoices.map(i => i.id === editing ? { ...d, id: editing } : i));
-    else setInvoices([...invoices, { ...d, id: generateId() }]);
+    const client = clients.find(c => c.id === form.clientId);
+    const invoiceCount = invoices.length + 1;
+    const d = { ...form, amount: Number(form.amount), deposit: Number(form.deposit), clientId: form.clientId, invoiceNumber: `INV-${String(invoiceCount).padStart(3, "0")}` };
+    if (editing) {
+      const updated = { ...d, id: editing, _synced: true };
+      setInvoices(invoices.map(i => i.id === editing ? updated : i));
+      syncToSupabase(updated, client);
+    } else {
+      const newInv = { ...d, id: generateId() };
+      setInvoices([...invoices, newInv]);
+      syncToSupabase(newInv, client);
+    }
     setShowForm(false); setEditing(null);
   };
 
@@ -2100,7 +2138,7 @@ export default function App() {
         {tab === "quote" && <QuoteGen clients={clients} setJobs={setJobs} setInvoices={setInvoices} addNotification={addNotification} />}
         {tab === "jobs" && <Jobs jobs={jobs} setJobs={setJobs} clients={clients} setClients={setClients} staff={staff} addNotification={addNotification} />}
         {tab === "clients" && <Clients clients={clients} setClients={setClients} />}
-        {tab === "invoices" && <Invoices invoices={invoices} setInvoices={setInvoices} clients={clients} addNotification={addNotification} />}
+        {tab === "invoices" && <Invoices invoices={invoices} setInvoices={setInvoices} clients={clients} addNotification={addNotification} biz={biz} />}
         {tab === "staff" && <StaffMgmt staff={staff} setStaff={setStaff} jobs={jobs} />}
         {tab === "expenses" && <Expenses expenses={expenses} setExpenses={setExpenses} />}
         {tab === "reports" && <Reporting jobs={jobs} clients={clients} invoices={invoices} expenses={expenses} />}
