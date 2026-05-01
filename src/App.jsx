@@ -255,7 +255,8 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
       if (!authError && authData.user) {
         const u = authData.user;
         const meta = u.user_metadata || {};
-        const nb = { id: u.id, name: meta.company_name || email.split("@")[0], email: u.email, phone: meta.phone || "", address: meta.address || "", plan: meta.plan || "free", isOwner: true, isAdmin: false, suspended: false, exemptFromSubscription: false, createdAt: u.created_at?.split("T")[0] || new Date().toISOString().split("T")[0] };
+        const isBlueOwl = u.email === "office@blueowlcleanings.co.uk" || u.email === "ola@blueowlcleanings.com";
+        const nb = { id: u.id, name: meta.company_name || email.split("@")[0], email: u.email, phone: meta.phone || "", address: meta.address || "", plan: isBlueOwl ? "business" : (meta.plan || "free"), isOwner: true, isAdmin: false, suspended: false, exemptFromSubscription: isBlueOwl, createdAt: u.created_at?.split("T")[0] || new Date().toISOString().split("T")[0] };
         setLoggingIn(false);
         onLogin(nb, nb);
         return;
@@ -1814,16 +1815,7 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
           </button>
         )}
       </Card>
-      {(biz.email === "office@blueowlcleanings.co.uk" || biz.email === "ola@blueowlcleanings.com") && (
-        <Card style={{ marginBottom: 12 }}>
-          <SecTitle>Subscription</SecTitle>
-          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-            <input type="checkbox" checked={biz.exemptFromSubscription || false} onChange={(e) => onUpdate({ exemptFromSubscription: e.target.checked })} style={{ cursor: "pointer", width: 18, height: 18 }} />
-            <span style={{ fontSize: 13, color: T.navy, flex: 1 }}>Skip subscription requirement</span>
-          </label>
-          <p style={{ fontSize: 11, color: T.muted, margin: "8px 0 0", lineHeight: 1.5, paddingLeft: 28 }}>When enabled, you can use the app without upgrading to a paid plan.</p>
-        </Card>
-      )}
+
       <Card style={{ marginBottom: 12 }}>
         <SecTitle>Notifications</SecTitle>
         <p style={{ fontSize: 13, color: T.muted, marginBottom: 12, lineHeight: 1.5 }}>Get instant alerts for new replies, job reminders and invoice payments.</p>
