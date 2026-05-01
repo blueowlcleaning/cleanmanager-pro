@@ -324,6 +324,7 @@ export default function TrainingCompliance({ staff = [] }) {
       {tab === "courses" && (
         <div style={{ padding: 16 }}>
           <div style={{ fontSize: 13, color: T.muted, marginBottom: 12, lineHeight: 1.5 }}>🎓 Accredited face-to-face and online training courses from UK providers. Updated regularly by our AI agent.</div>
+          <div style={{ fontSize: 11, color: T.muted, background: "#FEF9E7", border: "1px solid #F9E79F", borderRadius: 8, padding: "8px 12px", marginBottom: 12 }}>⚠️ Course details and prices are for guidance only. Tap View & Book for current availability and pricing direct from the provider.</div>
           <input value={searchCourse} onChange={e => setSearchCourse(e.target.value)} placeholder="🔍 Search courses..." style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1px solid #ddd", fontSize: 14, fontFamily: "inherit", marginBottom: 14, boxSizing: "border-box", outline: "none" }} />
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {filteredCourses.map((course, i) => (
