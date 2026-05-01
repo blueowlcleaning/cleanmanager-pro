@@ -74,7 +74,7 @@ const hydrate = async () => {
 // INITIAL DATA
 // ═══════════════════════════════════════════════════════════
 const buildInitialData = () => ({
-  version: 2,
+  version: 3,
   businesses: [
     {
       id: "blueowl",
@@ -109,44 +109,13 @@ const buildInitialData = () => ({
       createdAt: "2026-01-01",
     },
   ],
-  clients: {
-    blueowl: [
-      { id: "c1", name: "Jing Hu", phone: "07543084722", email: "jing@email.com", address: "E14 0RF", type: "Domestic", notes: "2-bed flat, prefers mornings", pin: generatePin(), pinHash: "", createdAt: "2026-03-01" },
-      { id: "c2", name: "Philip Masters", phone: "07700900001", email: "philip@company.com", address: "SW6 1AA", type: "Commercial", notes: "Monthly deep clean", pin: generatePin(), pinHash: "", createdAt: "2026-02-15" },
-      { id: "c3", name: "Paul Bark — VSS Dev", phone: "07700900002", email: "paul@vssdevelopments.com", address: "NW8 7AB", type: "Commercial", notes: "Builder's clean", pin: generatePin(), pinHash: "", createdAt: "2026-02-01" },
-    ],
-  },
-  jobs: {
-    blueowl: [
-      { id: "j1", clientId: "c1", title: "Deep Clean + Carpet + Oven", date: "2026-04-11", time: "09:00", status: "Confirmed", value: 410, notes: "2-bed E14 0RF", staffIds: ["s1"], photos: [], recurring: null, checkins: [] },
-      { id: "j2", clientId: "c2", title: "Monthly Deep Clean", date: "2026-04-14", time: "08:00", status: "Pending", value: 750, notes: "SW6 office", staffIds: [], photos: [], recurring: "monthly", checkins: [] },
-      { id: "j3", clientId: "c3", title: "Builder's Clean", date: "2026-06-01", time: "07:00", status: "Quoted", value: 900, notes: "117 Broadley Street NW8", staffIds: [], photos: [], recurring: null, checkins: [] },
-      { id: "j4", clientId: "c1", title: "Window Clean", date: "2026-03-15", time: "10:00", status: "Completed", value: 80, notes: "", staffIds: ["s1"], photos: [], recurring: null, checkins: [] },
-      { id: "j5", clientId: "c2", title: "Office Deep Clean", date: "2026-03-20", time: "08:00", status: "Completed", value: 650, notes: "", staffIds: ["s1", "s2"], photos: [], recurring: null, checkins: [] },
-    ],
-  },
-  staff: {
-    blueowl: [
-      { id: "s1", name: "Ola Aina", role: "Director", phone: "07472539762", email: "office@blueowlcleanings.co.uk", status: "Active" },
-      { id: "s2", name: "Sarah James", role: "Cleaner", phone: "07700900010", email: "sarah@email.com", status: "Active" },
-    ],
-  },
-  invoices: {
-    blueowl: [
-      { id: "i1", jobId: "j1", clientId: "c1", amount: 410, deposit: 205, status: "Deposit Paid", issued: "2026-04-02", due: "2026-04-11" },
-      { id: "i2", jobId: "j2", clientId: "c2", amount: 750, deposit: 0, status: "Unpaid", issued: "2026-04-03", due: "2026-04-14" },
-      { id: "i3", jobId: "j4", clientId: "c1", amount: 80, deposit: 0, status: "Paid", issued: "2026-03-15", due: "2026-03-15" },
-      { id: "i4", jobId: "j5", clientId: "c2", amount: 650, deposit: 325, status: "Paid", issued: "2026-03-20", due: "2026-03-20" },
-    ],
-  },
-  expenses: {
-    blueowl: [
-      { id: "e1", category: "Equipment", description: "Vacuum cleaner", amount: 120, date: "2026-03-15" },
-      { id: "e2", category: "Supplies", description: "Cleaning products bulk order", amount: 45, date: "2026-04-01" },
-      { id: "e3", category: "Transport", description: "Fuel — March", amount: 60, date: "2026-03-28" },
-      { id: "e4", category: "Insurance", description: "Public liability renewal", amount: 280, date: "2026-01-01" },
-    ],
-  },
+  clients: { blueowl: [] },
+  jobs: { blueowl: [] },
+  staff: { blueowl: [
+    { id: "s1", name: "Ola Aina", role: "Director", phone: "07472539762", email: "office@blueowlcleanings.co.uk", status: "Active" },
+  ]},
+  invoices: { blueowl: [] },
+  expenses: { blueowl: [] },
   notifications: { blueowl: [] },
 });
 
@@ -800,7 +769,7 @@ function Clients({ clients, setClients }) {
               </div>
               <div style={{ display: "flex", gap: 5, flexShrink: 0, marginLeft: 8 }}>
                 <Btn small variant="ghost" onClick={() => { setForm({ ...c, pin: c.pin || "" }); setEditing(c.id); setShowForm(true); }}>Edit</Btn>
-                <Btn small variant="danger" onClick={() => setClients(clients.filter(x => x.id !== c.id))}>✕</Btn>
+                <Btn small variant="danger" onClick={() => { if(window.confirm("Delete " + c.name + " and all their jobs, invoices and expenses?")) { setClients(clients.filter(x => x.id !== c.id)); setJobs(prev => prev.filter(j => j.clientId !== c.id)); setInvoices(prev => prev.filter(i => i.clientId !== c.id)); setExpenses(prev => prev.filter(e => e.clientId !== c.id)); } }}>✕</Btn>
               </div>
             </div>
           </Card>
@@ -1885,8 +1854,34 @@ export default function App() {
   const [processingPayment, setProcessingPayment] = useState(false);
 
   useEffect(() => {
-    const dataStr = localStorage.getItem("cleanmanager_data");
-    const data = dataStr ? JSON.parse(dataStr) : buildInitialData();
+    let dataStr = localStorage.getItem("cleanmanager_data");
+    let data = dataStr ? JSON.parse(dataStr) : buildInitialData();
+    // Version check — if old version, clear demo data but keep businesses and staff
+    if (data.version < 3) {
+      const freshData = buildInitialData();
+      data = {
+        ...freshData,
+        businesses: data.businesses || freshData.businesses,
+        staff: data.staff || freshData.staff,
+        clients: {},
+        jobs: {},
+        invoices: {},
+        expenses: {},
+        notifications: {},
+      };
+      // Rebuild empty arrays for each business
+      (data.businesses || []).forEach(b => {
+        if (!b.isAdmin) {
+          data.clients[b.id] = [];
+          data.jobs[b.id] = [];
+          data.invoices[b.id] = [];
+          data.expenses[b.id] = [];
+          data.notifications[b.id] = [];
+          data.staff[b.id] = data.staff[b.id] || [];
+        }
+      });
+      localStorage.setItem("cleanmanager_data", JSON.stringify(data));
+    }
 
     const search = window.location.search || "";
     if (search.includes("success=true")) {
