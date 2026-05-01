@@ -27,6 +27,7 @@ const fetchStats=async(force=false)=>{
     setLoading(false);
     return;
   }
+  setLoading(true);
   try{
     const r=await fetch("/api/sequence-engine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"stats",business_id:bizId})});
     const d=await r.json();
@@ -116,7 +117,7 @@ return(
 <span>Live Feed — {leads.length} of {stats.total} leads</span>
 <button onClick={()=>fetchStats(true)} style={{fontSize:10,color:T.blue,background:"none",border:"none",cursor:"pointer"}}>↻ Refresh</button>
 </div>
-{loading&&<div style={{textAlign:"center",padding:40,color:T.muted}}>Loading live data...</div>}
+{loading&&leads.length===0&&<div style={{textAlign:"center",padding:20,color:T.muted,fontSize:12}}>Fetching live data... 🦉</div>}
 {leads.slice(0,page).map((lead,i)=>{
 const tl=touchLabel(lead.touchIndex);
 const lastSent=lead.lastSentAt?new Date(lead.lastSentAt).toLocaleDateString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Not sent";
