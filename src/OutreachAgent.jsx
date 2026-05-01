@@ -17,7 +17,16 @@ const[target,setTarget]=useState("Restaurant");
 const[sectors,setSectors]=useState(SECTORS.map(s=>s.label));const[page,setPage]=useState(20);
 const ref=useRef(null);
 
-const fetchStats=async()=>{
+const cache = {data: null, time: 0};
+const fetchStats=async(force=false)=>{
+  const now = Date.now();
+  if (!force && cache.data && (now - cache.time) < 300000) {
+    const d = cache.data;
+    setStats({total:d.total||0,active:d.active||0,sent:d.total||0,opens:0,replies:0});
+    setLeads([...d.leads].sort((a,b)=>(b.lastSentAt||0)-(a.lastSentAt||0)));
+    setLoading(false);
+    return;
+  }
   try{
     const r=await fetch("/api/sequence-engine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"stats",business_id:bizId})});
     const d=await r.json();
@@ -26,6 +35,7 @@ const fetchStats=async()=>{
     const opens=ls.filter(l=>l.opens>0).length;
     const replies=ls.filter(l=>l.replies>0).length;
     setStats({total:d.total||0,active:d.active||0,sent:d.total||0,opens,replies});
+    cache.data = {...d, leads: ls}; cache.time = Date.now();
     setLeads([...ls].sort((a,b)=>(b.lastSentAt||0)-(a.lastSentAt||0)));
     setLoading(false);
   }catch(e){setLoading(false);}
@@ -104,7 +114,7 @@ return(
 {tab==="Activity"&&<div>
 <div style={{fontSize:11,color:T.muted,textTransform:"uppercase",letterSpacing:1.5,marginBottom:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
 <span>Live Feed — {leads.length} of {stats.total} leads</span>
-<button onClick={fetchStats} style={{fontSize:10,color:T.blue,background:"none",border:"none",cursor:"pointer"}}>↻ Refresh</button>
+<button onClick={()=>fetchStats(true)} style={{fontSize:10,color:T.blue,background:"none",border:"none",cursor:"pointer"}}>↻ Refresh</button>
 </div>
 {loading&&<div style={{textAlign:"center",padding:40,color:T.muted}}>Loading live data...</div>}
 {leads.slice(0,page).map((lead,i)=>{
