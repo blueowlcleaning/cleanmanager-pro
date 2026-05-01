@@ -1824,7 +1824,23 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
           <p style={{ fontSize: 11, color: T.muted, margin: "8px 0 0", lineHeight: 1.5, paddingLeft: 28 }}>When enabled, you can use the app without upgrading to a paid plan.</p>
         </Card>
       )}
-      <Btn full variant="danger" onClick={onLogout}>Sign Out</Btn>
+      <Card style={{ marginBottom: 12 }}>
+        <SecTitle>Notifications</SecTitle>
+        <p style={{ fontSize: 13, color: T.muted, marginBottom: 12, lineHeight: 1.5 }}>Get instant alerts for new replies, job reminders and invoice payments.</p>
+        <Btn full variant="navy" onClick={async () => {
+          try {
+            if (!("serviceWorker" in navigator) || !("PushManager" in window)) { alert("Not supported on this device."); return; }
+            const reg = await navigator.serviceWorker.register("/sw.js");
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+              const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY });
+              localStorage.setItem("pushSub", JSON.stringify(sub));
+              alert("Notifications enabled!");
+            } else { alert("Permission denied. Enable in phone settings."); }
+          } catch(e) { alert("Error: " + e.message); }
+        }}>🔔 Enable Notifications</Btn>
+      </Card>
+    <Btn full variant="danger" onClick={onLogout}>Sign Out</Btn>
     </div>
   );
 }
