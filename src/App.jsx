@@ -1803,6 +1803,11 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
         }}>🔔 Enable Notifications</Btn>
       </Card>
     <Btn full variant="danger" onClick={onLogout}>Sign Out</Btn>
+    <div style={{ textAlign: "center", marginTop: 16 }}>
+      <a href="/privacy" target="_blank" style={{ fontSize: 12, color: "#888", textDecoration: "none" }}>Privacy Policy</a>
+      <span style={{ color: "#ccc", margin: "0 8px" }}>·</span>
+      <span style={{ fontSize: 12, color: "#888" }}>CleanManager Pro v1.0</span>
+    </div>
     </div>
   );
 }
