@@ -5,7 +5,7 @@ const SL={sent:"Sent",opened:"Opened",replied:"Replied"};
 const T={gold:"#C9A84C",blue:"#4a9eff",green:"#3ddc84",yellow:"#f5c842",text:"#e8e8e8",muted:"#666"};
 function Dot({on}){return<span style={{width:9,height:9,borderRadius:"50%",background:on?T.green:"#444",display:"inline-block",animation:on?"pulse 1.4s ease-out infinite":"none",boxShadow:on?"0 0 0 0 rgba(61,220,132,0.6)":"none"}}/>}
 function Card({label,value,accent}){return<div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:14,padding:"14px 16px",flex:1}}><div style={{fontSize:24,fontWeight:700,color:accent,fontFamily:"monospace"}}>{value}</div><div style={{fontSize:10,color:T.muted,marginTop:2,textTransform:"uppercase",letterSpacing:1}}>{label}</div></div>}
-export default function OutreachAgent(){
+export default function OutreachAgent({bizId="blueowl"}){
 const[on,setOn]=useState(false);
 const[stats,setStats]=useState({total:0,active:0,sent:0,opens:0,replies:0});
 const[leads,setLeads]=useState([]);
@@ -19,7 +19,7 @@ const ref=useRef(null);
 
 const fetchStats=async()=>{
   try{
-    const r=await fetch("/api/sequence-engine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"stats"})});
+    const r=await fetch("/api/sequence-engine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"stats",business_id:bizId})});
     const d=await r.json();
     const ls=d.leads||[];
     const sent=ls.filter(l=>l.touchIndex>=1).length;

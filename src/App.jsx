@@ -2129,7 +2129,7 @@ export default function App() {
 
       {/* CONTENT */}
       <div style={{ flex: 1, padding: "16px 13px 85px", overflowY: "auto" }}>
-      {tab === "agent" && <OutreachAgent/>}
+      {tab === "agent" && <OutreachAgent bizId={biz?.id || "blueowl"}/>}
       {tab === "training" && <TrainingCompliance staff={staff}/>}
       {tab === "pipeline" && <HotLeads/>}
       {tab === "inbox" && <RepliesInbox/>}
