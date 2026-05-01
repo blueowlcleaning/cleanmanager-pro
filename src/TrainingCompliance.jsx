@@ -103,14 +103,94 @@ const LEARN_MATERIALS = {
 };
 
 const COURSES = [
-  { provider: "Highfield Qualifications", title: "Level 2 Award in Cleaning Principles", type: "Accredited", location: "Various UK locations", format: "Face-to-face", duration: "1 day", price: "£120-£180", url: "https://www.highfieldqualifications.com/qualifications/cleaning-and-support-services", accreditation: "Ofqual regulated" },
-  { provider: "BICS", title: "Professional Cleaning Operator", type: "Industry Accredited", location: "London & nationwide", format: "Face-to-face + online", duration: "2 days", price: "£195-£250", url: "https://training.bics.org.uk/collections", accreditation: "BICS accredited" },
-  { provider: "Trained Up", title: "COSHH Awareness for Cleaners", type: "Specialist", location: "Online + London venues", format: "Online or face-to-face", duration: "Half day", price: "£65-£95", url: "https://www.highfieldqualifications.com/find-a-training-centre", accreditation: "CPD certified" },
-  { provider: "Direct Learning", title: "Manual Handling for Cleaning Staff", type: "Essential", location: "East London / City", format: "Face-to-face", duration: "Half day", price: "£45-£75", url: "https://www.directlearning.co.uk/courses/manual-handling/", accreditation: "CPD certified" },
-  { provider: "City & Guilds", title: "Level 1 Award in Cleaning Skills", type: "Nationally Recognised", location: "Colleges nationwide", format: "Face-to-face", duration: "2-4 weeks", price: "Funded options available", url: "https://www.cityandguilds.com/qualifications-and-apprenticeships/services/cleaning-and-support-services", accreditation: "City & Guilds" },
-  { provider: "St John Ambulance", title: "First Aid at Work", type: "Regulated", location: "London venues", format: "Face-to-face", duration: "3 days", price: "£250-£350", url: "https://www.sja.org.uk/courses/first-aid-at-work/", accreditation: "HSE approved" },
-  { provider: "NCFE", title: "Level 2 Certificate in Infection Prevention", type: "Accredited", location: "Online + supported learning", format: "Blended learning", duration: "6-8 weeks", price: "£150-£200", url: "https://www.ncfe.org.uk/qualification-search/", accreditation: "Ofqual regulated" },
-  { provider: "Skills for Care", title: "Infection Prevention and Control", type: "Specialist", location: "Online", format: "Online self-paced", duration: "3 hours", price: "£25-£40", url: "https://www.skillsforcare.org.uk/Support-for-leaders-and-managers/Developing-your-workforce/Care-skills-basecamp/Care-skills-basecamp.aspx", accreditation: "CPD certified" },
+  {
+    provider: "Highfield Qualifications",
+    title: "Level 2 Award in Cleaning Principles",
+    type: "Accredited",
+    location: "Various UK locations",
+    format: "Face-to-face",
+    duration: "1 day",
+    price: "£120-£180",
+    url: "https://www.highfieldqualifications.com/search?keyword=cleaning",
+    accreditation: "Ofqual regulated"
+  },
+  {
+    provider: "BICS",
+    title: "Professional Cleaning Operator",
+    type: "Industry Accredited",
+    location: "London & nationwide",
+    format: "Face-to-face + online",
+    duration: "2 days",
+    price: "£195-£250",
+    url: "https://training.bics.org.uk/collections",
+    accreditation: "BICS accredited"
+  },
+  {
+    provider: "NCFE",
+    title: "Level 2 Certificate in Cleaning Principles",
+    type: "Nationally Recognised",
+    location: "Online + supported learning",
+    format: "Blended learning",
+    duration: "6-8 weeks",
+    price: "£150-£200",
+    url: "https://www.ncfe.org.uk/qualification-search/qualification-detail/ncfe-level-2-certificate-in-cleaning-principles-1098",
+    accreditation: "Ofqual regulated"
+  },
+  {
+    provider: "NCFE",
+    title: "Health & Safety for Cleaning Industry",
+    type: "Specialist",
+    location: "Online + supported learning",
+    format: "Blended learning",
+    duration: "4-6 weeks",
+    price: "£100-£150",
+    url: "https://www.ncfe.org.uk/qualification-search/qualification-detail/health-and-safety-for-the-cleaning-and-support-services-industry-690",
+    accreditation: "Ofqual regulated"
+  },
+  {
+    provider: "NCFE",
+    title: "Cleaning Decontamination & Waste Management",
+    type: "Specialist",
+    location: "Online + supported learning",
+    format: "Blended learning",
+    duration: "4-6 weeks",
+    price: "£100-£150",
+    url: "https://www.ncfe.org.uk/qualification-search/qualification-detail/cleaning-decontamination-and-waste-management-1867",
+    accreditation: "Ofqual regulated"
+  },
+  {
+    provider: "Reed.co.uk",
+    title: "Cleaning Courses & Training",
+    type: "Various",
+    location: "Online & UK venues",
+    format: "Online & face-to-face",
+    duration: "Various",
+    price: "From £25",
+    url: "https://www.reed.co.uk/courses/cleaning",
+    accreditation: "CPD & accredited options"
+  },
+  {
+    provider: "Learndirect",
+    title: "Online Cleaning Course",
+    type: "Online",
+    location: "Online — study anywhere",
+    format: "Online self-paced",
+    duration: "Flexible",
+    price: "From £29",
+    url: "https://www.learndirect.com/course/cleaning",
+    accreditation: "CPD certified"
+  },
+  {
+    provider: "St John Ambulance",
+    title: "First Aid at Work",
+    type: "Regulated",
+    location: "London venues",
+    format: "Face-to-face",
+    duration: "3 days",
+    price: "£250-£350",
+    url: "https://www.sja.org.uk/courses/workplace-first-aid/hse-first-aid-at-work/book-faw/",
+    accreditation: "HSE approved"
+  },
 ];
 
 const T = {
