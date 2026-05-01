@@ -9,7 +9,7 @@ export default function HotLeads() {
     fetch("https://cleanmanager-pro.vercel.app/api/sequence-engine", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "stats" })
+      body: JSON.stringify({ action: "stats", business_id: bizId })
     })
     .then(r => r.json())
     .then(data => {
