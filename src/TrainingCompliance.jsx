@@ -110,7 +110,7 @@ const COURSES = [
     location: "Various UK locations",
     format: "Face-to-face",
     duration: "1 day",
-    price: "£120-£180",
+    price: "Price on application",
     url: "https://www.highfieldqualifications.com/search?keyword=cleaning",
     accreditation: "Ofqual regulated"
   },
@@ -121,7 +121,7 @@ const COURSES = [
     location: "London & nationwide",
     format: "Face-to-face + online",
     duration: "2 days",
-    price: "£195-£250",
+    price: "Price on application",
     url: "https://training.bics.org.uk/collections",
     accreditation: "BICS accredited"
   },
@@ -132,7 +132,7 @@ const COURSES = [
     location: "Online + supported learning",
     format: "Blended learning",
     duration: "6-8 weeks",
-    price: "£150-£200",
+    price: "Price on application",
     url: "https://www.ncfe.org.uk/qualification-search/qualification-detail/ncfe-level-2-certificate-in-cleaning-principles-1098",
     accreditation: "Ofqual regulated"
   },
@@ -143,7 +143,7 @@ const COURSES = [
     location: "Online + supported learning",
     format: "Blended learning",
     duration: "4-6 weeks",
-    price: "£100-£150",
+    price: "Price on application",
     url: "https://www.ncfe.org.uk/qualification-search/qualification-detail/health-and-safety-for-the-cleaning-and-support-services-industry-690",
     accreditation: "Ofqual regulated"
   },
@@ -154,7 +154,7 @@ const COURSES = [
     location: "Online + supported learning",
     format: "Blended learning",
     duration: "4-6 weeks",
-    price: "£100-£150",
+    price: "Price on application",
     url: "https://www.ncfe.org.uk/qualification-search/qualification-detail/cleaning-decontamination-and-waste-management-1867",
     accreditation: "Ofqual regulated"
   },
@@ -187,7 +187,7 @@ const COURSES = [
     location: "London venues",
     format: "Face-to-face",
     duration: "3 days",
-    price: "£250-£350",
+    price: "Price on application",
     url: "https://www.sja.org.uk/courses/workplace-first-aid/hse-first-aid-at-work/book-faw/",
     accreditation: "HSE approved"
   },
