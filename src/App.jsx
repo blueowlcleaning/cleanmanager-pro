@@ -1814,7 +1814,7 @@ function Settings({ biz, onLogout, handleCheckout, onUpdate }) {
           </button>
         )}
       </Card>
-      {biz.isOwner && (
+      {(biz.email === "office@blueowlcleanings.co.uk" || biz.email === "ola@blueowlcleanings.com") && (
         <Card style={{ marginBottom: 12 }}>
           <SecTitle>Subscription</SecTitle>
           <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
@@ -2020,6 +2020,12 @@ export default function App() {
   };
 
   if (loading) return (
+    <div style={{ minHeight: "100vh", background: "#0A1F44", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "Arial" }}>
+      <div style={{ fontSize: 56, marginBottom: 16 }}>🦉</div>
+      <div style={{ color: "#C9A84C", fontSize: 14, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>Loading...</div>
+    </div>
+  );
+  if (false) return (
     <div style={{ background: T.navy, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>
       <div style={{ textAlign: "center" }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>🦉</div>
