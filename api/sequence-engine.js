@@ -144,6 +144,10 @@ export default async function handler(req, res) {
   }
 
   if (action === "stats") {
+    // Never fall back to blueowl leads for other businesses
+    if (!bizId || bizId === "undefined") {
+      return res.status(200).json({ total: 0, active: 0, completed: 0, leads: [] });
+    }
     const pattern = `lead:${bizId}:*`;
     const keys = await redis.keys(pattern);
     const leads = [];
@@ -151,6 +155,8 @@ export default async function handler(req, res) {
       const raw = await redis.get(k);
       if (raw) {
         const lead = typeof raw === "string" ? JSON.parse(raw) : raw;
+        // Double check lead belongs to this business
+        if (lead.business_id && lead.business_id !== bizId) continue;
         leads.push(lead);
       }
     }
