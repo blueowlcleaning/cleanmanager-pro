@@ -231,9 +231,9 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
         onLogin(nb, nb);
         return;
       }
-      // Fallback to legacy auth
-      const biz = data?.businesses ? Object.values(data.businesses).find(b => b.email && b.email.toLowerCase() === email.toLowerCase()) : null;
-      if (!biz) { setError("No account found. Please check your email and password."); setLoggingIn(false); return; }
+      // Fallback to legacy auth — only for hardcoded accounts (blueowl, admin)
+      const biz = data?.businesses ? Object.values(data.businesses).find(b => b.email && b.email.toLowerCase() === email.toLowerCase() && (b.id === "blueowl" || b.id === "admin")) : null;
+      if (!biz) { setError("No account found. Please sign up or check your email."); setLoggingIn(false); return; }
       if (biz.suspended) { setError("This account has been suspended."); setLoggingIn(false); return; }
       if (biz.passwordHash !== simpleHash(password)) { setError("Incorrect password."); setLoggingIn(false); return; }
       setLoggingIn(false);
