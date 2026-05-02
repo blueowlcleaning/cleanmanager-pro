@@ -44,7 +44,7 @@ const fetchStats=async(force=false)=>{
   }catch(e){setLoading(false);}
 };
 
-useEffect(()=>{fetchStats();const i=setInterval(fetchStats,30000);return()=>clearInterval(i);},[]);
+useEffect(()=>{delete agentCache[bizId];fetchStats();const i=setInterval(fetchStats,30000);return()=>clearInterval(i);},[bizId]);
 
 useEffect(()=>{
   if(on){ref.current=setInterval(fetchStats,15000);}
