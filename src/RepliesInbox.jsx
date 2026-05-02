@@ -32,7 +32,7 @@ export default function RepliesInbox() {
             borderRadius: 12, textAlign: "center", fontWeight: 700, fontSize: 14,
             textDecoration: "none"
           }}>📧 Reply to this email</a>
-          <a href={"mailto:" + selected.from + "?subject=Re: " + selected.subject + "&body=Dear Sir/Madam,%0A%0AThank you for your response. I would love to arrange a free site visit at your earliest convenience.%0A%0AKind regards,%0AOla Aina%0ADirector — Blue Owl Cleaning Ltd%0A07472 539 762"} style={{
+          <a href={"mailto:" + selected.from + "?subject=Re: " + selected.subject + "&body=Dear Sir/Madam,%0A%0AThank you for your response. I would love to arrange a free site visit at your earliest convenience.%0A%0AKind regards,%0A" + bizDirector + "%0A" + bizName + "%0A" + bizPhone} style={{
             display: "block", padding: 14, background: T.navy, color: T.white,
             borderRadius: 12, textAlign: "center", fontWeight: 700, fontSize: 14,
             textDecoration: "none"
@@ -45,7 +45,7 @@ export default function RepliesInbox() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", background: T.light, minHeight: "100vh", paddingBottom: 100 }}>
       <div style={{ background: T.navy, padding: "20px 16px 16px" }}>
-        <div style={{ fontSize: 11, color: T.gold, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 4 }}>Blue Owl</div>
+        <div style={{ fontSize: 11, color: T.gold, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 4 }}>{bizName}</div>
         <div style={{ fontSize: 20, fontWeight: 800, color: T.white, marginBottom: 4 }}>Replies Inbox</div>
         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{replies.length} replies received</div>
       </div>

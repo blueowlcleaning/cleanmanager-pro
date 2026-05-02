@@ -5,7 +5,8 @@ const SL={sent:"Sent",opened:"Opened",replied:"Replied"};
 const T={gold:"#C9A84C",blue:"#4a9eff",green:"#3ddc84",yellow:"#f5c842",text:"#e8e8e8",muted:"#666"};
 function Dot({on}){return<span style={{width:9,height:9,borderRadius:"50%",background:on?T.green:"#444",display:"inline-block",animation:on?"pulse 1.4s ease-out infinite":"none",boxShadow:on?"0 0 0 0 rgba(61,220,132,0.6)":"none"}}/>}
 function Card({label,value,accent}){return<div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:14,padding:"14px 16px",flex:1}}><div style={{fontSize:24,fontWeight:700,color:accent,fontFamily:"monospace"}}>{value}</div><div style={{fontSize:10,color:T.muted,marginTop:2,textTransform:"uppercase",letterSpacing:1}}>{label}</div></div>}
-export default function OutreachAgent({bizId="blueowl"}){
+const agentCache = {};
+export default function OutreachAgent({bizId="blueowl",bizName="My Business",bizEmail="ola@blueowlcleanings.com"}){
 const[on,setOn]=useState(false);
 const[stats,setStats]=useState({total:0,active:0,sent:0,opens:0,replies:0});
 const[leads,setLeads]=useState([]);
@@ -17,10 +18,10 @@ const[target,setTarget]=useState("Restaurant");
 const[sectors,setSectors]=useState(SECTORS.map(s=>s.label));const[page,setPage]=useState(20);
 const ref=useRef(null);
 
-const cache = {data: null, time: 0};
 const fetchStats=async(force=false)=>{
   const now = Date.now();
-  if (!force && cache.data && (now - cache.time) < 300000) {
+  const cache = agentCache[bizId];
+  if (!force && cache && (now - cache.time) < 300000) {
     const d = cache.data;
     setStats({total:d.total||0,active:d.active||0,sent:d.total||0,opens:0,replies:0});
     setLeads([...d.leads].sort((a,b)=>(b.lastSentAt||0)-(a.lastSentAt||0)));
@@ -36,7 +37,7 @@ const fetchStats=async(force=false)=>{
     const opens=ls.filter(l=>l.opens>0).length;
     const replies=ls.filter(l=>l.replies>0).length;
     setStats({total:d.total||0,active:d.active||0,sent:d.total||0,opens,replies});
-    cache.data = {...d, leads: ls}; cache.time = Date.now();
+    agentCache[bizId] = {data: {...d, leads: ls}, time: Date.now()};
     setLeads([...ls].sort((a,b)=>(b.lastSentAt||0)-(a.lastSentAt||0)));
     setLoading(false);
   }catch(e){setLoading(false);}
@@ -63,7 +64,7 @@ const generate=async()=>{
 };
 
 const sendTest=async()=>{
-  const r=await fetch("/api/send-emails",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:"ola@blueowlcleanings.com",subject:"Test - Blue Owl Outreach Agent",body:preview||"Test email"})});
+  const r=await fetch("/api/send-emails",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:bizEmail,subject:"Test - Outreach Agent",body:preview||"Test email"})});
   const d=await r.json();
   alert(d.success?"Email sent!":"Error sending email.");
 };
@@ -83,7 +84,7 @@ return(
 <div style={{padding:"52px 20px 0",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
 <div style={{display:"flex",alignItems:"center",gap:10}}>
 <div style={{fontSize:28}}>🦉</div>
-<div><div style={{fontSize:10,color:T.gold,textTransform:"uppercase",letterSpacing:2,fontWeight:700}}>Blue Owl</div><div style={{fontSize:19,fontWeight:700}}>Outreach Agent</div></div>
+<div><div style={{fontSize:10,color:T.gold,textTransform:"uppercase",letterSpacing:2,fontWeight:700}}>{bizName}</div><div style={{fontSize:19,fontWeight:700}}>Outreach Agent</div></div>
 </div>
 <div style={{fontSize:10,color:T.green,background:"rgba(61,220,132,0.08)",border:"1px solid rgba(61,220,132,0.3)",borderRadius:100,padding:"6px 12px",display:"flex",alignItems:"center",gap:6,textTransform:"uppercase",letterSpacing:1,fontWeight:600}}>
 <Dot on={true}/>Running
@@ -141,7 +142,7 @@ return(
 {["Restaurant","Hospital","Care Home","Office","Warehouse","Cafe","Corporate","Hotel","School","Gym","Law Firm"].map(s=>(<button key={s} onClick={()=>setTarget(s)} style={{padding:"6px 12px",background:target===s?"rgba(74,158,255,0.15)":"rgba(255,255,255,0.04)",border:"1px solid "+(target===s?"rgba(74,158,255,0.4)":"rgba(255,255,255,0.08)"),borderRadius:100,color:target===s?T.blue:"#555",fontSize:11,cursor:"pointer"}}>{s}</button>))}
 </div>
 <button onClick={generate} disabled={generating} style={{width:"100%",padding:"12px",background:"rgba(74,158,255,0.12)",border:"1px solid rgba(74,158,255,0.3)",borderRadius:12,color:T.blue,fontSize:13,fontWeight:600,cursor:"pointer",marginBottom:10}}>{generating?"Generating...":"Generate Email Preview"}</button>
-<button onClick={sendTest} disabled={!preview} style={{width:"100%",padding:"12px",background:"rgba(61,220,132,0.12)",border:"1px solid rgba(61,220,132,0.3)",borderRadius:12,color:T.green,fontSize:13,fontWeight:600,cursor:"pointer",marginBottom:14,opacity:preview?1:0.5}}>Send Test to ola@blueowlcleanings.com</button>
+<button onClick={sendTest} disabled={!preview} style={{width:"100%",padding:"12px",background:"rgba(61,220,132,0.12)",border:"1px solid rgba(61,220,132,0.3)",borderRadius:12,color:T.green,fontSize:13,fontWeight:600,cursor:"pointer",marginBottom:14,opacity:preview?1:0.5}}>Send Test Email</button>
 {preview&&<div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:14,padding:18,fontSize:13,lineHeight:1.7,color:"#ccc",whiteSpace:"pre-wrap"}}>{preview}</div>}
 </div>}
 

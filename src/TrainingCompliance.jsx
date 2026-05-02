@@ -217,7 +217,7 @@ function statusLabel(status) {
   return { valid: "Valid", expiring: "Expiring Soon", expired: "Expired", missing: "Not Set" }[status] || "Not Set";
 }
 
-export default function TrainingCompliance({ staff = [] }) {
+export default function TrainingCompliance({ staff = [], bizName = "My Business" }) {
   const defaultStaff = staff.length > 0 ? staff : [{ id: "1", name: "Staff Member 1" }, { id: "2", name: "Staff Member 2" }];
   const [tab, setTab] = useState("compliance");
   const [selectedStaff, setSelectedStaff] = useState(defaultStaff[0]?.id || "1");
@@ -255,7 +255,7 @@ export default function TrainingCompliance({ staff = [] }) {
 
       {/* Header */}
       <div style={{ background: T.navy, padding: "20px 16px 0" }}>
-        <div style={{ fontSize: 11, color: T.gold, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 4 }}>Blue Owl Cleaning Ltd</div>
+        <div style={{ fontSize: 11, color: T.gold, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 4 }}>{bizName}</div>
         <div style={{ fontSize: 20, fontWeight: 800, color: T.white, marginBottom: 16 }}>Training Academy</div>
         <div style={{ display: "flex", gap: 0, borderBottom: "none" }}>
           {[["compliance","📋","Compliance"],["learn","📚","Learn"],["courses","🎓","Courses"]].map(([id,icon,label]) => (

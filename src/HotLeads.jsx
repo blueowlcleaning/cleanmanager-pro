@@ -44,7 +44,7 @@ export default function HotLeads() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", background: T.light, minHeight: "100vh", paddingBottom: 100 }}>
       <div style={{ background: T.navy, padding: "20px 16px 16px" }}>
-        <div style={{ fontSize: 11, color: T.gold, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 4 }}>Blue Owl</div>
+        <div style={{ fontSize: 11, color: T.gold, textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 4 }}>{bizName}</div>
         <div style={{ fontSize: 20, fontWeight: 800, color: T.white, marginBottom: 4 }}>Lead Pipeline</div>
         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{leads.length} total leads · {hot.length} hot</div>
       </div>
