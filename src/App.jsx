@@ -1961,7 +1961,7 @@ export default function App() {
           setData(updatedData);
           localStorage.setItem("cleanmanager_data", JSON.stringify(updatedData));
           setBiz(newBiz);
-          setTab("dashboard");
+          setTab("dashboard"); document.title = "CMP - " + (bizObj?.id || "unknown");
           localStorage.removeItem("pendingBusinessData");
           if (window.history && window.history.replaceState) {
             window.history.replaceState({}, document.title, window.location.pathname);
