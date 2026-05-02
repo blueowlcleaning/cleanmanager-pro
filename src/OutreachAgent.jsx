@@ -18,6 +18,7 @@ const[target,setTarget]=useState("Restaurant");
 const[sectors,setSectors]=useState(SECTORS.map(s=>s.label));const[page,setPage]=useState(20);
 const ref=useRef(null);
 
+useEffect(()=>{ if(bizId !== "blueowl") alert("Demo bizId: " + bizId); },[]);
 const fetchStats=async(force=false)=>{
   const now = Date.now();
   const cache = agentCache[bizId];
@@ -29,7 +30,6 @@ const fetchStats=async(force=false)=>{
     return;
   }
   setLoading(true);
-  console.log("Agent fetching for bizId:", bizId);
   try{
     const r=await fetch("/api/sequence-engine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"stats",business_id:bizId})});
     const d=await r.json();
