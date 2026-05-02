@@ -1,6 +1,7 @@
 import OutreachAgent from "./OutreachAgent.jsx";
 import { supabase } from "./supabase.js";
 import Privacy from "./Privacy.jsx";
+import ResetPassword from "./ResetPassword.jsx";
 
 // Push notification helper
 async function registerPush() {
@@ -214,6 +215,19 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
   const [showPass, setShowPass] = useState(false);
 
   const [loggingIn, setLoggingIn] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const sendResetEmail = async () => {
+    if (!email.trim()) { setError("Please enter your email address first."); return; }
+    setResetLoading(true);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+      redirectTo: "https://cleanmanager-pro.vercel.app/reset-password"
+    });
+    setResetLoading(false);
+    if (resetError) { setError(resetError.message); return; }
+    setResetSent(true);
+  };
   const login = async () => {
     setError("");
     setLoggingIn(true);
@@ -353,6 +367,19 @@ function AuthScreen({ onLogin, data, handleCheckout }) {
           }
           {error && <div style={{ background: "rgba(192,57,43,0.2)", border: "1px solid rgba(192,57,43,0.4)", borderRadius: 8, padding: "8px 12px", color: "#ff8a80", fontSize: 13, marginBottom: 12 }}>{error}</div>}
           <Btn full variant="gold" onClick={login} disabled={loggingIn}>{loggingIn ? "Signing in..." : "Sign In"}</Btn>
+          {!forgotMode && !resetSent && <div style={{ textAlign: "center", marginTop: 12 }}>
+            <button onClick={() => { setForgotMode(true); setError(""); }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Forgot password?</button>
+          </div>}
+          {forgotMode && !resetSent && <div style={{ marginTop: 12, background: "rgba(255,255,255,0.05)", borderRadius: 12, padding: 16 }}>
+            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, marginBottom: 12 }}>Enter your email above and we will send you a reset link.</div>
+            <Btn full variant="gold" onClick={sendResetEmail} disabled={resetLoading}>{resetLoading ? "Sending..." : "Send Reset Link"}</Btn>
+            <button onClick={() => { setForgotMode(false); setError(""); }} style={{ width: "100%", marginTop: 8, background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Cancel</button>
+          </div>}
+          {resetSent && <div style={{ marginTop: 12, background: "rgba(61,220,132,0.1)", border: "1px solid rgba(61,220,132,0.3)", borderRadius: 12, padding: 16, textAlign: "center" }}>
+            <div style={{ fontSize: 24, marginBottom: 8 }}>📧</div>
+            <div style={{ color: "#3ddc84", fontSize: 13, fontWeight: 700 }}>Reset link sent!</div>
+            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginTop: 4 }}>Check your email and follow the link to reset your password.</div>
+          </div>}
           <div style={{ textAlign: "center", marginTop: 16 }}>
             <button onClick={() => setMode("plans")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>New business? Sign up free →</button>
           </div>
@@ -2065,6 +2092,7 @@ export default function App() {
   };
 
   if (window.location.pathname === "/privacy") return <Privacy />;
+  if (window.location.pathname === "/reset-password") return <ResetPassword />;
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0A1F44", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "Arial" }}>
       <div style={{ fontSize: 56, marginBottom: 16 }}>🦉</div>
