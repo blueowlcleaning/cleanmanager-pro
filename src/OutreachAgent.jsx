@@ -29,6 +29,7 @@ const fetchStats=async(force=false)=>{
     return;
   }
   setLoading(true);
+  console.log("Agent fetching for bizId:", bizId);
   try{
     const r=await fetch("/api/sequence-engine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"stats",business_id:bizId})});
     const d=await r.json();
