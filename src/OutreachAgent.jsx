@@ -18,7 +18,6 @@ const[target,setTarget]=useState("Restaurant");
 const[sectors,setSectors]=useState(SECTORS.map(s=>s.label));const[page,setPage]=useState(20);
 const ref=useRef(null);
 
-useEffect(()=>{ if(bizId !== "blueowl") alert("Demo bizId: " + bizId); },[]);
 const fetchStats=async(force=false)=>{
   const now = Date.now();
   const cache = agentCache[bizId];

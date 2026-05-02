@@ -1861,9 +1861,23 @@ export default function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSupaSession(session);
+      if (session?.user && !biz) {
+        const u = session.user;
+        const meta = u.user_metadata || {};
+        const isBlueOwl = u.email === "office@blueowlcleanings.co.uk" || u.email === "ola@blueowlcleanings.com";
+        const nb = { id: u.id, name: meta.company_name || u.email.split("@")[0], email: u.email, phone: meta.phone || "", address: meta.address || "", plan: isBlueOwl ? "business" : (meta.plan || "free"), isOwner: true, isAdmin: false, suspended: false, exemptFromSubscription: isBlueOwl, createdAt: u.created_at?.split("T")[0] || new Date().toISOString().split("T")[0] };
+        setBiz(nb);
+      }
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSupaSession(session);
+      if (session?.user && !biz) {
+        const u = session.user;
+        const meta = u.user_metadata || {};
+        const isBlueOwl = u.email === "office@blueowlcleanings.co.uk" || u.email === "ola@blueowlcleanings.com";
+        const nb = { id: u.id, name: meta.company_name || u.email.split("@")[0], email: u.email, phone: meta.phone || "", address: meta.address || "", plan: isBlueOwl ? "business" : (meta.plan || "free"), isOwner: true, isAdmin: false, suspended: false, exemptFromSubscription: isBlueOwl, createdAt: u.created_at?.split("T")[0] || new Date().toISOString().split("T")[0] };
+        setBiz(nb);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
